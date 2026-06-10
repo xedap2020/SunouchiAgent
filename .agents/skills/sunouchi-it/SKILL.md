@@ -1,0 +1,202 @@
+---
+name: sunouchi-it
+description: Sử dụng kỹ năng này để phân loại tài liệu PDF/hình ảnh (hóa đơn, đơn đặt hàng, bản vẽ) cho Sunouchi IT, trích xuất dữ liệu có cấu trúc, tra cứu mã cơ sở dữ liệu (sản phẩm, khách hàng, nhà cung cấp) từ MySQL cục bộ, và tự động nhập/điền dữ liệu JSON đã tra cứu vào ứng dụng ERP Nhật Bản bằng cách mô phỏng bàn phím/chuột ở cấp hệ điều hành. Kích hoạt kỹ năng này khi người dùng yêu cầu xử lý, trích xuất hoặc phân loại tệp PDF hóa đơn/đơn đặt hàng, so khớp mã với cơ sở dữ liệu hoặc chạy công cụ tự động nhập liệu ERP Auto-Typer.
+compatibility: Windows OS, Python 3.x với venv, cơ sở dữ liệu MySQL cục bộ và môi trường tương thích PyAutoGUI.
+---
+
+# Kỹ năng Agent Sunouchi IT
+
+Kỹ năng này đăng ký các công cụ và hướng dẫn tùy chỉnh cho quy trình Phân loại & Trích xuất PDF và ERP Auto-Typer trong không gian làm việc Sunouchi IT.
+
+---
+
+## Các kịch bản có sẵn
+
+Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư mục `scripts/`. Khi chạy các kịch bản này, hãy đảm bảo môi trường ảo Python của không gian làm việc đã được kích hoạt hoặc sử dụng `venv/Scripts/python.exe`.
+
+- **`scripts/run_pipeline.py`**
+  - **Mục đích**: Tự động hóa và tối ưu hóa quy trình phân loại & trích xuất PDF hàng loạt, giúp nén và đối chiếu cơ sở dữ liệu cho nhiều tệp cùng lúc để giảm số lượt tương tác của Agent.
+  - **Sử dụng**:
+    - Nén tất cả PDF đầu vào:
+      ```bash
+      venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all
+      ```
+    - Giải quyết đối chiếu mã DB hàng loạt:
+      ```bash
+      venv/Scripts/python.exe scripts/run_pipeline.py --action resolve_batch --json_file <đường_dẫn_batch_json>
+      ```
+- **`scripts/db_helper.py`**
+  - **Mục đích**: Kết nối với cơ sở dữ liệu MySQL cục bộ để tra cứu và khớp mã (sản phẩm, khách hàng, nhà cung cấp) cho dữ liệu JSON hóa đơn đã trích xuất.
+  - **Sử dụng**:
+    ```bash
+    venv/Scripts/python.exe scripts/db_helper.py --action resolve --json_file <đường_dẫn_json>
+    ```
+- **`scripts/autoType.py`**
+  - **Mục đích**: Tự động nhập dữ liệu JSON đã đối chiếu vào ứng dụng desktop ERP Nhật Bản bằng cách mô phỏng bàn phím và chuột cấp hệ điều hành.
+  - **Sử dụng**:
+    ```bash
+    venv/Scripts/python.exe scripts/autoType.py --json_file <đường_dẫn_json_đã_đối_chiếu> [--open_new_form]
+    ```
+- **`scripts/compress_pdf.py`**
+  - **Mục đích**: Nén file PDF thành dạng ảnh chất lượng trung bình (120 DPI, 70% quality) để tối ưu dung lượng và tăng tốc xử lý cho Agent.
+  - **Sử dụng**:
+    ```bash
+    venv/Scripts/python.exe scripts/compress_pdf.py --input <đường_dẫn_pdf_gốc> --output <đường_dẫn_pdf_nén>
+    ```
+---
+
+## 1. Bộ phân loại & Trích xuất PDF
+
+Thực hiện phân loại và trích xuất dữ liệu từ các tài liệu PDF/hình ảnh (hóa đơn, đơn đặt hàng, bản vẽ) bằng ngữ cảnh mô hình của Agent, sau đó ánh xạ dữ liệu trích xuất với mã cơ sở dữ liệu (sản phẩm, khách hàng, nhà cung cấp) bằng cách kết nối trực tiếp với cơ sở dữ liệu MySQL cục bộ.
+
+### Cách sử dụng
+Là người dùng, bạn có thể yêu cầu:
+- *"Chạy PDF Classifier cho file <đường dẫn file>"* (chạy tool phân loại và trích xuất dựa trên đường dẫn file cục bộ)
+- *"Tôi có những tool gì?"* (xem danh sách công cụ hiện có)
+
+### Danh sách kiểm tra quy trình (Tối ưu hóa hàng loạt - Khuyên dùng)
+Làm theo danh sách kiểm tra này để xử lý các tài liệu một cách hiệu quả và tiết kiệm lượt tương tác:
+
+- [ ] **Bước 1: Xác định và hiển thị các tệp đầu vào**
+  - Thư mục đầu vào chứa các tệp PDF gốc: `data/pdf/PDF/`.
+  - **BẮT BUỘC**: Phải phản hồi theo đúng cấu trúc mẫu cố định sau đây để đảm bảo tính nhất quán (không tự ý thêm bớt từ ngữ ngoài mẫu này):
+    
+    ---
+    Tôi đã mở công cụ **Sunouchi IT**.
+
+    Dưới đây là danh sách các tệp PDF đầu vào cần xử lý trong thư mục `data/pdf/PDF/`:
+    - [Tên_File_1.pdf](file:///e:/project/.agents/data/pdf/PDF/Tên_File_1_đã_url_encode.pdf)
+    - [Tên_File_2.pdf](file:///e:/project/.agents/data/pdf/PDF/Tên_File_2_đã_url_encode.pdf)
+    ...
+
+    Vui lòng phản hồi ("tiến hành",...) và cho biết bạn muốn xử lý bao nhiêu file để bắt đầu bước tiếp theo.
+    ---
+  - **BẮT BUỘC**: Chờ người dùng gửi xác nhận đồng ý (ví dụ: "đồng ý", "ok", "tiến hành",...) rồi mới được thực hiện chạy các lệnh nén hay trích xuất ở Bước 2.
+- [ ] **Bước 2: Nén tất cả các tệp PDF đầu vào trong 1 lượt**
+  - Chạy lệnh nén hàng loạt để chuyển đổi toàn bộ PDF trong thư mục nguồn sang thư mục tạm:
+    ```bash
+    venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all
+    ```
+- [ ] **Bước 3: Đọc và Trích xuất hàng loạt (Batch Extraction)**
+  - Liệt kê tất cả các tệp trong `data/temp_compress/`.
+  - Với mỗi tệp PDF tạm thời:
+    - Sử dụng `view_file` để đọc nội dung của tệp.
+    - Phân loại tài liệu theo mẫu từ `invoice1` đến `invoice12`.
+    - Trích xuất dữ liệu thô (raw JSON) tuân thủ chính xác theo schema của mẫu hóa đơn đó.
+  - Gộp tất cả dữ liệu trích xuất thô vào một tệp cấu trúc JSON duy nhất tại `data/batch_raw.json` theo định dạng sau:
+    ```json
+    {
+      "Tên_file_gốc_1.pdf": { <Dữ liệu JSON thô của file 1> },
+      "Tên_file_gốc_2.pdf": { <Dữ liệu JSON thô của file 2> }
+    }
+    ```
+- [ ] **Bước 4: Chạy Đối chiếu DB hàng loạt và Dọn dẹp**
+  - Chạy lệnh đối chiếu DB tự động cho tất cả dữ liệu thô trong `data/batch_raw.json`. Lệnh này sẽ tự động lưu các file JSON đã giải quyết mã vào `data/pdf/json/`, đồng thời tự động xóa thư mục file tạm:
+    ```bash
+    venv/Scripts/python.exe scripts/run_pipeline.py --action resolve_batch --json_file data/batch_raw.json
+    ```
+- [ ] **Bước 5: Hiển thị kết quả tóm tắt cho người dùng**
+  - **BẮT BUỘC**: Phải phản hồi theo đúng cấu trúc mẫu cố định sau đây để đảm bảo tính nhất quán (không tự ý thêm bớt từ ngữ ngoài mẫu này):
+
+    ---
+    Tôi đã hoàn thành quy trình Phân loại & Trích xuất dữ liệu.
+
+    Dưới đây là danh sách các tệp JSON đã được xuất thành công:
+    - [Tên_File_1.json](file:///e:/project/.agents/data/pdf/json/Tên_File_1_đã_url_encode.json) (Loại tài liệu: [Loại_Tài_Liệu_1])
+    - [Tên_File_2.json](file:///e:/project/.agents/data/pdf/json/Tên_File_2_đã_url_encode.json) (Loại tài liệu: [Loại_Tài_Liệu_2])
+    ...
+
+    Bạn có muốn chạy công cụ **ERP Auto-Typer** để tự động nhập dữ liệu từ các tệp JSON này vào ứng dụng ERP không?
+    ---
+
+---
+
+## 2. ERP Auto-Typer
+
+Tự động nhập dữ liệu JSON đã đối chiếu vào ứng dụng ERP Nhật Bản bằng cách mô phỏng bàn phím/chuột cấp hệ điều hành.
+
+### Cách sử dụng
+Là người dùng, bạn có thể yêu cầu:
+- *"Chạy ERP Auto-Typer"* (tự động quét và điền toàn bộ file JSON trong thư mục data/pdf/json)
+- *"Chạy ERP Auto-Typer cho file <đường dẫn JSON>"* (chạy nhập liệu cho riêng file được chỉ định)
+
+### Danh sách kiểm tra quy trình
+Làm theo danh sách kiểm tra này để thực thi Auto-Typer:
+
+- [ ] **Bước 1: Xác định các tệp JSON**
+  - Nếu một đường dẫn tệp cụ thể được cung cấp, bỏ qua và chuyển đến **Bước 3**.
+  - Nếu không, xác định thư mục hoạt động: `data/pdf/json/`.
+- [ ] **Bước 2: Thực hiện tự động nhập hàng loạt**
+  - Liệt kê tất cả các tệp `.json` trong thư mục `data/pdf/json/`. Nếu không có tệp nào tồn tại, thông báo cho người dùng.
+  - Khuyên người dùng rằng quá trình tự động nhập hàng loạt đang chạy và họ **KHÔNG ĐƯỢC** sử dụng bàn phím/chuột.
+  - Chạy kịch bản tuần tự cho tất cả các tệp:
+    ```powershell
+    Get-ChildItem "data/pdf/json/*.json" | ForEach-Object {
+        venv\Scripts\python.exe scripts\autoType.py --json_file $_.FullName
+    }
+    ```
+- [ ] **Bước 3: Thực hiện tệp đơn lẻ**
+  - Đọc tệp JSON được chỉ định và xác minh định dạng của nó (ví dụ: có `customer_code`, `slip_date`, `slip_number`, `detail_list`, v.v.).
+  - Khuyên người dùng rằng quá trình tự động nhập đang bắt đầu và họ **KHÔNG ĐƯỢC** sử dụng bàn phím/chuột.
+  - Chạy kịch bản (thêm `--open_new_form` nếu được yêu cầu mở một biểu mẫu mới):
+    ```bash
+    venv/Scripts/python.exe scripts/autoType.py --json_file <đường_dẫn_tệp_json_đã_đối_chiếu>
+    ```
+
+---
+
+## Lưu ý & Trường hợp biên
+
+- **Tên tệp quyết định `customer_code`**: Trước khi trích xuất dữ liệu, bạn **BẮT BUỘC** phải kiểm tra tên tệp PDF. Nếu tên tệp khớp với bất kỳ từ khóa nào bên dưới, hãy gán mã `customer_code` gồm 6 chữ số tương ứng vào header đã trích xuất. **KHÔNG** ghi đè mã này bằng logic khác.
+  * "アイテック南関東" hoặc "アイテック南関東支店" → customer_code = "102020"
+  * "ｵｰｴﾑｺｰﾎﾟﾚｰｼｮﾝ" hoặc "㈲ｵｰｴﾑｺｰﾎﾟﾚｰｼｮﾝ" → customer_code = "140200"
+  * "石崎ボルト" → customer_code = "110500"
+  * "石崎ボルト長岡" → customer_code = "110510"
+  * "大川スティール" → customer_code = "140500"
+  * "大津鉄工" → customer_code = "140600"
+  * "小野建沖縄" → customer_code = "140830"
+  * "カガヤ" → customer_code = "150200"
+  * "川田工業" → customer_code = "151300"
+  * "岸" → customer_code = "160100"
+  * "駒井ハルテック" → customer_code = "190500"
+  * "サンコー丸亀" → customer_code = "203010"
+  * "大陽日酸ｶﾞｽ大阪" → customer_code = "250100"
+  * "大陽日酸ｶﾞｽ業務" → customer_code = "250110"
+  * "砂山商事" → customer_code = "220400"
+  * "星和小山" → customer_code = "230110"
+  * "ＴＯＫＡＩ" → customer_code = "290300"
+  * "日鉄物産" → customer_code = "311000"
+  * "フルサト" → customer_code = "371500"
+  * "ムラタ北関東" → customer_code = "420110"
+  * "室賀ファスナー" → customer_code = "420200"
+  * "MMK開発" hoặc "MMK開発課" → customer_code = "135410"
+  * "MMK東北" → customer_code = "135810"
+  * "MMK中部" → customer_code = "135900"
+  * "MMK関西" → customer_code = "136100"
+  * "MMK関西兵庫" → customer_code = "136101"
+  * "MMK関西第一課" → customer_code = "136102"
+  * "MMK関西第一課兵庫" → customer_code = "136103"
+  * "MMK四国" → customer_code = "136200"
+  * "MMK北陸" → customer_code = "136300"
+  * "MMK中国" → customer_code = "136400"
+  * "MMK九州" → customer_code = "136620"
+  * "MMKH札幌" → customer_code = "133001"
+  * "MMHK関東" → customer_code = "133100"
+  * "MMKH東京" → customer_code = "133200"
+  * "MMKH東北" → customer_code = "133000"
+  * "MMK1-2" → customer_code = "135210"
+  * "MMKH新潟" → customer_code = "133800"
+  * "金太" → customer_code = "160500"
+  * "JKW大阪" → customer_code = "210500"
+  * "MMK新潟" → customer_code = "133800"
+  * "MMK札幌帯広" → customer_code = "133002"
+  * "MMK旭川" → customer_code = "133003"
+  * "原産業" → customer_code = "350200"
+  * "アイン" → customer_code = "100500"
+  * "星和" → customer_code = "230100"
+  * "日鉄物産東北" → customer_code = "311030"
+  * "日鉄物産九州" → customer_code = "311040"
+
+- **Không can thiệp vào quá trình Autotype**: ERP Auto-Typer thực hiện tự động hóa GUI cấp hệ điều hành bằng cách nhấp chuột và nhập bàn phím. Khuyên người dùng tránh xa bàn phím/chuột và không chuyển đổi cửa sổ đang hoạt động trong khi quy trình đang chạy.
+- **Kết nối cơ sở dữ liệu MySQL**: Quy trình tra cứu đối chiếu mã (`db_helper.py`) kết nối trực tiếp với thực thể MySQL cục bộ. Nếu cơ sở dữ liệu ngoại tuyến hoặc không được cấu hình chính xác trong các biến môi trường, bước tra cứu mã sẽ thất bại.
+- **Thực thi không tương tác**: Cả hai kịch bản xử lý PDF và nhập liệu ERP phải chạy trong môi trường shell không tương tác. Không mong đợi bất kỳ lời nhắc tương tác nào hoặc yêu cầu nhập thông tin trong quá trình thực thi.

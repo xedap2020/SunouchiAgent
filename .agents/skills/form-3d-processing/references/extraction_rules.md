@@ -1,0 +1,232 @@
+============================================================
+OUTPUT SHAPE (CẤU TRÚC JSON ĐẦU RA BẮT BUỘC)
+============================================================
+{
+    "header": {
+        "受注区分": null,
+        "搬入口": null,
+        "代理店": null,
+        "出荷日": null,
+        "納期": null,
+        "出荷倉庫": null,
+        "オーダーNo": null,
+        "工事名": null,
+        "受注担当者": null,
+        "customer_name1": null,
+        "customer_name2": null,
+        "customer_code": null,
+        "supplier_name": null,
+        "supplier_code": null,
+        "supplier_postal_code": null,
+        "supplier_tel": null,
+        "agent": null,
+        "comment": null
+    },
+    "tables": {
+        "items": [
+            {
+                "商品コード": null,
+                "長さ": null,
+                "員数": null,
+                "オーダーNo": null,
+                "工事名": null,
+                "product_title": null,
+                "product_type": null,
+                "product_size": null,
+                "is_processing": null
+            }
+        ]
+    }
+}
+
+============================================================
+RULES (QUY TẮC TRÍCH XUẤT)
+============================================================
+- CHỈ trả về định dạng JSON hợp lệ. Không kèm văn bản ngoài (markdown). Không thêm chú thích.
+- Kết quả đầu ra phải khớp chính xác cấu trúc: {"header": {...}, "tables": {"items": [...]}}
+
+============================================================
+KHÓA SCHEMA NGHIÊM NGẶT (STRICT SCHEMA LOCK)
+============================================================
+- Giữ nguyên các KEY chính xác như trong schema mẫu.
+- KHÔNG thêm/xóa/đổi tên các key.
+- Thông tin thiếu hoặc không rõ ràng => gán giá trị null.
+- KHÔNG tự ý suy luận giá trị trừ khi có hướng dẫn cụ thể.
+- nếu gặp file pdf có nhiều trang thì header lấy data ở cái trang đầu tiên còn items thì phải lấy của tất cả các trang không được bỏ qua trang nào 
+
+[EXPLICIT BLACKLIST - QUAN TRỌNG]
+Bạn BẮT BUỘC phải để giá trị `null` cho các trường sau, BẤT KỂ trên PDF ghi gì. KHÔNG trích xuất dữ liệu cho các key này:
+- "商品コード" PHẢI LÀ null.
+- "product_title" PHẢI LÀ null.
+- "受注区分" PHẢI LÀ null.
+- "搬入口" PHẢI LÀ null.
+- "代理店" PHẢI LÀ null.
+- "出荷倉庫" PHẢI LÀ null.
+- "受注担当者" PHẢI LÀ null.
+
+============================================================
+QUY TẮC TRÍCH XUẤT PHẦN HEADER
+============================================================
+
+■ オーダーNo (Mã đơn hàng)
+- Trích xuất từ mục "発注書NO." nếu có 
+
+■ 工事名 (Tên công trình)
+- Trích xuất từ mục: "物件名（工区・節）"
+
+■ 出荷日 (Ngày xuất hàng)
+- Trường này sẽ lùi lại 1 ngày với 納期 nếu vướng thứ 7 hoặc chủ nhật thì phải lùi 3 ngày (bạn phải tự tính toán 納期 là thứ mấy trong năm để xác định chính xác 出荷日)
+- Định dạng nghiêm ngặt: YYYY/MM/DD
+
+■ 納期 (Ngày giao hàng)
+- Trường này sẽ được viết tay bằng chữ màu đỏ ở trên đơn and được viết dưới dạng tháng/ngày còn năm sẽ lấy mặc định là 2026 (ví dụ: trên đơn ghi 5/13 thì 納期 sẽ là 2026/5/13)
+- Định dạng nghiêm ngặt: YYYY/MM/DD
+
+■ supplier_name 
+- Trường này trích xuất ở mục 会社名 của mục 納入先
+
+■ supplier_tel 
+- Trường này trúc xuất ở mục TEL của mục 納入先
+- Định dạng của trường này là XXX-XXX-XXXX hoặc XXXX-XX-XXXX , nếu như trên file pdf chỉ có 1 dãy số kiểu XXXXXXXXXX thì bạn phải chuẩn hóa về định dạng XXX-XXX-XXXX hoặc XXXX-XX-XXXX
+
+■ supplier_code
+- trường này thì để null 
+
+■ customer_name1 và customer_name2 thì để null  
+
+============================================================
+NHẬN DIỆN DÒNG SẢN PHẨM (ITEM ROW DETECTION)
+============================================================
+- Một hàng chỉ được tính là tồn tại nếu CẢ 数量 (Số lượng) VÀ 単価 (Đơn giá) đều có giá trị.
+- Một hàng trên PDF = Một đối tượng JSON.
+
+============================================================
+QUY TẮC ƯU TIÊN TUYỆT ĐỐI (ABSOLUTE PRIORITY RULE)
+============================================================
+- TUYỆT ĐỐI KHÔNG xác định trường dữ liệu dựa trên định dạng ký tự.
+- Gán dữ liệu nghiêm ngặt theo các nhãn mô tả (descriptors). Nếu không có mô tả khớp -> null.
+
+============================================================
+TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)
+============================================================
+
+■ product_type (Quy tắc trích xuất & Chuẩn hóa)
+Định nghĩa: Ký hiệu phân loại ngắn trong mô tả sản phẩm.
+- KHÔNG ĐƯỢC cắt bỏ các hậu tố tiếng Nhật dính liền (ví dụ: 型, ミニ, 枠) trừ trường hợp B-120型 và B-180型 thì chỉ lấy B-120 và B-180 .
+Chuẩn hóa ưu tiên cao:
+- Dòng AP: Nếu mã là "AP" + số (ví dụ: AP36, AP48) -> CHỈ lấy "AP" làm product_type.
+- Dòng CP: Nếu mã là "CP" + số nhưng thiếu dấu gạch ngang (ví dụ: CP40) -> Phải chuyển thành "CP-40".
+Các mẫu phổ biến: EX, SC, B-120, L型, CP-40, AP, RGｸﾘｯﾌﾟ, VS, VM, VB-55, VWS, CBW-S02NP, TGW-30, F-S, LB-12, A-80, ...
+- Bạn không được nhầm chữ L型 với chữ レ型, trường hợp mà bạn đọc ra được chữ レ型 thì phải chuẩn hóa về L型 ngay 
+- product_type sẽ có dạng là chữ cái viết hoa (A-Z), số (0-9) và dấu gạch ngang (-) và 1 số ký tự tiếng nhật khác (ví dụ: 型, ｸﾘｯﾌ
+- trong trường hợp mà có chữ 流止め thì product_type chính là 特AP còn product_size chính là chữ bên cạnh có dạng AXBXC (A, B, C là 1 số) 
+- nếu gặp chữ RGクリップ thì chuyễn về RGｸﾘｯﾌﾟ
+- Một số  product_type khác có thể gặp: B-120, B-180, VS, VM, VL, VB-55, VB-75, VB-110, VWS, VW, VWB, VM-30, VL-30, VB-5530, VS-4, VM-4, VL-4, VL-25, VB-25, FS, FM, FL, FB-55, FB-75, FB-110, FWS, FW, FWB, FWN-20, FWN-32, FM-30, FL-30, FB-5530, FS-4, FM-4, FL-4, FM-25, FL-25, FB-25, FB-7525, FM-328, FL-340, SC, SC-3T, SC-4T, SC-5, RT-25, A, AW, AW-2, A-50, A-80, A-110, DF-40, DF-55, DF-75, DF-120, CP-40, CP-50, CP-100, YV-25, FMG-28, FHT-30, YHR-25N, YHR-32N, YHR-50N, ND, TR-25, TR-40, VSHD, VLHD, JS, L-1, L-2, LB-12, LB-17, LCB-19, LCB-20, LB-23T, LCB-27T, LCB-29T, LB-46T, RV-3245, RV-3250, RV-3255, SRF-30, SRF-40, CAT-30, NST-1, VW-32R, VW-55R, CAT-16, BPX140-35, IT-50, PSK-50, PSK-503, SS, V-S, V-M, V-L, F-S, F-M, F-L, CBW-30NP, TGW-30L, CBW-G34NP, CBW-F40NP, CBW-271NP, CBW-276NP, CBW-TR90NP, CBW-07φNP, CBW-10φNP, CBW-12φNP, CBW-15φNP, CBW-S01NP, CBW-S02NP, CBW-S03NP, CBW-3C, CBW-36, CBW-J27, CBW-TR901, CBWR300TR, CBWR300G35, CBX-S02, CBX-F30P, CBX-30KG, CBM8067, CBX-WTD16, CBX-WTD41, CBX-WTD51, P-S, P-L, TC-25, TC-40
+- Nếu gặp các chữ giống với một số product_type có thể gặp mà các chữ đấy không có dấu gạch ngang ở giữa thì bạn tự chủ động thêmdấu gạch ngang vào (ví dụ: CP40 -> CP-40)
+- Nếu như ở cột 型番 có chữ L thì product_type là L型
+■ product_size (Chuẩn hóa kích thước động)
+Trường hợp đặc biệt - Dòng AP:
+	Trích xuất: Lấy <số> đằng sau chữ t= và Trích xuất: Lấy <số> và thêm số 38 và 50 vào kết quả, kết quả sẽ có dạng AXBXC (A, B, C là 1 số nguyên; A, B, C luôn có dạng tăng dần)
+	Ví dụ: Giá trị của cột サイズ(板厚・長さ・角度など) có t=38 -> 38X36X50; AP48MM -> 38X48X50 -> 38X48X50; AP60MM -> 38X50X60. 
+- Trong trường hợp mà product_type là CR-F thì product_size sẽ là AXBX với cái số đằng sau chữ L (ví dụ: ở cột サイズ(板厚・長さ・角度など) có giá trị L=60 thì product_size là 9X25X60)
+- Trong trường hợp mà product_type là CR-F và ở cột サイズ(板厚・長さ・角度など) chỉ có 1 số thì product_size là 9X25X cái số đấy 
+
+Trường hợp tiêu chuẩn nếu ở cột サイズ(板厚・長さ・角度など) chứa giá trị độ:
+	Chuẩn hóa: Định dạng thành <số>X<số>°.
+	Ví dụ: giá trị ở cột サイズ(板厚・長さ・角度など) là t=35 70° -> product_size là 35X70°.
+
+Trường hợp có chiều dài (Mẫu chữ L):
+	Mẫu: Nếu kích thước (ví dụ: 9X25) có kèm theo chữ "L" + <số> (ví dụ: L260).
+	Chuẩn hóa: Nối chiều dài bằng dấu "X".
+	Ví dụ: "9X25 ... L260" -> 9X25X260.
+Nếu kích thước 12X32 (ví dụ: 12X32 ... L260) thì là 1 trường hợp đặc biệt khác lúc đấy product_size sẽ là 12X32X
+
+Trường hợp product_type là AP thì product_size sẽ có dạng AXBXC (A, B, C là các số nguyên tăng dần A>B>C)
+	
+- trong trường hợp product_type là FB thì product_size chính là AXBXC thì phải chuẩn hóa lại cho các cái con số của nó tăng dần (A, B, C là 1 số, C thường nằm sau chữ L) (VD: nếu thấy chữ ストレート 9X25 平 SN490B L680 thì product_size chính là 9X25X680)
+- trong trường hợp nếu thấy chữ ストレート 12X32 平 SN490B L680 thì product_type là FB và product_size chính là 12X32X 
+- các cái trường trong product_size mà có dạng AXBXC thì phải chuẩn hóa lại cho các cái con số của nó tăng dần (VD: A>B>C thì phải đổi lại thành CXBXA)
+- trong trường hợp mà product_type là RGｸﾘｯﾌﾟ thì product_size là 6 hoặc 7.
+Quy tắc định dạng: Bắt buộc viết hoa chữ X, không có khoảng trắng, giữ nguyên ký hiệu độ ° nếu có.
+- trong trường hợp product_type là K型 thì product_size sẽ chỉ là 1 con số (ví dụ:  product_type là K型 product_size sẽ là 36 không phải 36MM)
+
+■ オーダーNo (Mã đơn hàng)
+- Trích xuất từ mục "発注No."
+- Loại bỏ các số 0 ở đầu (ví dụ: 0020 -> 20).
+- trường này thì bắt buộc phải lấy của trang tương ứng với cái bản ghi đấy chứ không được lấy của trang đầu tiên 
+				
+■ 工事名 (Tên công trình)
+				
+	- Trích xuất từ nhãn: "工事名:"
+	- Trường này thì bắt buộc phải lấy của trang tương ứng với cái bản ghi đấy chứ không được lấy của trang đầu tiên 
+	- Phạm vi lấy dữ liệu:
+	+ Bắt đầu từ:
+		* Nội dung nằm ngay sau "工事名:" trên cùng một dòng, hoặc
+		* Dòng kế tiếp gần nhất nếu dòng chứa nhãn không có dữ liệu
+
+	+ Cho phép đọc tiếp các dòng phía dưới (dòng 2, 3, 4, ...) nếu:
+		* Nội dung vẫn thuộc cùng một cụm thông tin của 工事名
+		* Bao gồm cả các dòng bổ sung/ghi chú liên quan (ví dụ: nội dung trong ngoặc như "(事務所棟)")
+		* Không gặp điều kiện dừng
+
+	- Điều kiện dừng:
+	+ Dừng khi gặp:
+		* Trường "郵便番号"
+		* Dòng tiêu đề, hướng dẫn hoặc nội dung không liên quan
+
+	- Ràng buộc:
+	+ Tuyệt đối không lấy dữ liệu từ bất kỳ dòng nào phía trên "工事名:"
+	+ Không lấy dữ liệu từ các dòng/trường phía trên có chứa từ "業所"
+
+	- Điều kiện dữ liệu:
+	+ Nếu sau "工事名:" không có nội dung hợp lệ → trả về null
+	+ Nếu không xác định được rõ ràng giá trị từ OCR → trả về null
+
+	- Chuẩn hóa:
+	+ Nếu giá trị chứa chữ cái Latin hoặc chữ số → chuyển toàn bộ sang dạng full-width (全角)
+
+	- Làm sạch dữ liệu:
+	+ Nếu trong giá trị có chứa "裏当金" → loại bỏ cụm "裏当金" khỏi kết quả
+	+ Nếu trong giá trị có chứa "ウラ当" → loại bỏ cụm "ウラ当" khỏi kết quả
+	+ Giữ lại các nội dung trong ngoặc () nếu liên quan đến 工事名 (ví dụ: "(事務所棟)")
+	+ Loại bỏ khoảng trắng dư thừa ở đầu/cuối và nối các dòng thành một chuỗi
+
+	- [LOẠI TRỪ CỤ THỂ]
+	+ Nếu kết quả đọc được chính xác là:
+		* "一宮倉庫様分(０００００１００)" hoặc "(有)相澤鉄工 様分 （０００３９３６２）" hoặc "(株)京和建設 様分 (００３１９３１１)"
+	+ → bắt buộc trả về null
+
+	[QUAN TRỌNG - TRÁNH NHẦM LẪN]
+	- TUYỆT ĐỐI KHÔNG lấy nhầm data từ những dòng khác.
+	- TUYỆT ĐỐI KHÔNG lấy các dòng tiêu đề hoặc ghi chú chung như:
+	"要送り状FAX 発注番号明記のこと"
+	- Dòng này là header instruction, KHÔNG phải dữ liệu của 工事名.
+	- Nếu OCR không tìm thấy giá trị rõ ràng cho 工事名 => bắt buộc trả về null.
+	- trường này thì bắt buộc phải lấy của trang tương ứng với cái bản ghi đấy chứ không được lấy của trang đầu tiên 
+
+■ is_processing
+- nếu product_type mà là FB, CR-F thì is_processing phải là TRUE còn nếu như product_type mà không phải là FB thì bắt buộc is_processing phải là FALSE 
+- trường hợp đặc biệt nếu product_type là FB và product_size là 12X32X thì is_processing là FALSE 
+
+============================================================
+CHỐT AN TOÀN DỮ LIỆU (PRODUCT META SAFETY LOCK)
+============================================================
+- product_type KHÔNG ĐƯỢC trùng với mã sản phẩm (商品コード).
+- KHÔNG tự ý suy luận dữ liệu không có sẵn trên PDF.
+- KHÔNG kết hợp hoặc "mượn" dữ liệu giữa các hàng khác nhau.
+- Nếu không chắc chắn hoặc mơ hồ -> Trả về null.
+- 長さ: trong trường hợp product type là FB, CR-F thì cái 長さ để null 
+- 長さ: trong trường hợp đặc biệt product_type là FB và product_size là 12X32X thì 長さ chính là giá trị nằm sau chữ L (ví dụ: 12X32 ... L260 thì 長さ là 260)
+============================================================
+QUY TẮC VỀ SỐ VÀ VĂN BẢN
+============================================================
+
+■ CÁC TRƯỜNG DỮ LIỆU SỐ (員数, 単価):
+- Trích xuất giá trị số thô từ các cột tương ứng.
+- Kết quả là kiểu Số (Number), không để trong dấu ngoặc kép.
+- Loại bỏ dấu phẩy phân cách hoặc ký tự đơn vị (ví dụ: 1,000 -> 1000).
+
+■ BẢO TỒN VĂN BẢN:
+- Giữ nguyên văn bản tiếng Nhật (Kanji/Kana) chính xác như trên file.
+- Chỉ chuẩn hóa các khoảng trắng thừa.
+- KHÔNG diễn giải lại, không dịch, không rút ngắn văn bản.
