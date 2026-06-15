@@ -3,3 +3,6 @@ venv/
 __pycache__/
 *.pyc
 .env
+data/pdfToJPG/
+data/temp_compress/
+data/temp_onboard/

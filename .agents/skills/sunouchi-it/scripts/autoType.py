@@ -56,15 +56,15 @@ class Logger:
 
     @staticmethod
     def success(msg):
-        print(f"[+] \033[92m{msg}\033[0m", flush=True)
+        print(f"[+] {msg}", flush=True)
 
     @staticmethod
     def warning(msg):
-        print(f"[!] \033[93m{msg}\033[0m", flush=True)
+        print(f"[!] {msg}", flush=True)
 
     @staticmethod
     def error(msg):
-        print(f"[-] \033[91m{msg}\033[0m", flush=True)
+        print(f"[-] {msg}", flush=True)
 
 
 # ============================================================================
@@ -158,11 +158,6 @@ class ERPAutotyper:
             
             if not receive_btn or not receive_btn.exists():
                 Logger.error("❌ Không tìm thấy nút 受注入力 trên Menu")
-                try:
-                    Logger.info("🔍 Đang in cấu trúc điều khiển của cửa sổ Menu để chẩn đoán...")
-                    menu_window.print_control_identifiers()
-                except Exception as ex:
-                    Logger.error(f"Không thể in cấu trúc điều khiển: {ex}")
                 return False
 
             Logger.info("📝 Đang click nút 受注入力 để mở form mới...")

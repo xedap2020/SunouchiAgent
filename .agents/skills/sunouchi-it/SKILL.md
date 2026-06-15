@@ -43,6 +43,12 @@ Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư m
     ```bash
     venv/Scripts/python.exe scripts/compress_pdf.py --input <đường_dẫn_pdf_gốc> --output <đường_dẫn_pdf_nén>
     ```
+- **`tools/prompt_generator/onboard_prep.py`**
+  - **Mục đích**: Tự động ghép cặp PDF-ERP mẫu, convert các trang PDF sang ảnh và sinh file request phục vụ quy trình Onboarding.
+  - **Sử dụng**:
+    ```bash
+    venv/Scripts/python.exe tools/prompt_generator/onboard_prep.py
+    ```
 ---
 
 ## 1. Bộ phân loại & Trích xuất PDF
@@ -69,9 +75,9 @@ Làm theo danh sách kiểm tra này để xử lý các tài liệu một cách
     - [Tên_File_2.pdf](file:///e:/project/.agents/data/pdf/PDF/Tên_File_2_đã_url_encode.pdf)
     ...
 
-    Vui lòng phản hồi ("tiến hành",...) và cho biết bạn muốn xử lý bao nhiêu file để bắt đầu bước tiếp theo.
+    Vui lòng phản hồi ("trích xuất",...) và cho biết bạn muốn xử lý bao nhiêu file để bắt đầu bước tiếp theo.
     ---
-  - **BẮT BUỘC**: Chờ người dùng gửi xác nhận đồng ý (ví dụ: "đồng ý", "ok", "tiến hành",...) rồi mới được thực hiện chạy các lệnh nén hay trích xuất ở Bước 2.
+  - **BẮT BUỘC**: Chờ người dùng gửi xác nhận đồng ý (ví dụ: "đồng ý", "ok", "trích xuất",...) rồi mới được thực hiện chạy các lệnh nén hay trích xuất ở Bước 2.
 - [ ] **Bước 2: Nén tất cả các tệp PDF đầu vào trong 1 lượt**
   - Chạy lệnh nén hàng loạt để chuyển đổi toàn bộ PDF trong thư mục nguồn sang thư mục tạm:
     ```bash
@@ -142,6 +148,57 @@ Làm theo danh sách kiểm tra này để thực thi Auto-Typer:
     ```bash
     venv/Scripts/python.exe scripts/autoType.py --json_file <đường_dẫn_tệp_json_đã_đối_chiếu>
     ```
+
+---
+
+## 3. Bộ thiết lập và Đóng gói Form Mới (Onboarding)
+
+Hướng dẫn Agent cách hỗ trợ người dùng khi họ muốn thiết lập quy tắc trích xuất và đóng gói Kỹ năng xử lý cho biểu mẫu hóa đơn mới.
+
+### Cách sử dụng & Kích hoạt
+Khi người dùng yêu cầu:
+- *"Tôi muốn thiết lập form mới"*, *"Tạo prompt cho hóa đơn mới"* hoặc hỏi các câu tương tự liên quan đến cách dạy/thiết lập form mới:
+  -> Agent **BẮT BUỘC** phải gửi hướng dẫn chuẩn bị tài liệu cho người dùng trước tiên:
+     1. Đặt các tệp PDF đơn hàng gốc và ảnh chụp ERP tương ứng vào thư mục `data/pdf/NewForm/`.
+     2. Đặt tên tệp giống nhau hoàn toàn để hệ thống tự khớp cặp (ví dụ: `TenĐốiTác_J123456.pdf` và `TenĐốiTác_J123456.png`).
+     3. Khuyên họ dùng từ 2-3 tệp mẫu để có độ chính xác cao nhất.
+     4. Bảo người dùng phản hồi *"Chạy script chuẩn bị"* sau khi đã để các file vào đúng chỗ.
+
+- *"Chạy script chuẩn bị form mới"* hoặc *"Chuẩn bị các tệp đơn hàng mới"* -> Chạy script `onboard_prep.py`.
+- *"Hãy phân tích các mẫu đã chuẩn bị và đóng gói thành Skill mới cho [Tên_Đối_Tác]"* -> Agent tự thực hiện phân tích và sinh Skill mới.
+
+### Danh sách kiểm tra quy trình (Dành cho Agent)
+Khi nhận lệnh đóng gói Skill mới từ người dùng:
+
+- [ ] **Bước 1: Đọc tệp tin yêu cầu đã được chuẩn bị**
+  - Đọc nội dung tệp `data/temp_onboard/onboard_request.json` để biết danh sách các tệp đơn hàng mẫu đã được chuẩn bị (gồm đường dẫn ảnh trang PDF và ảnh ERP tương ứng).
+  
+- [ ] **Bước 2: Phân tích hình ảnh đối chiếu**
+  - Sử dụng công cụ `view_file` để mở và xem các ảnh trang PDF của đơn hàng và ảnh chụp ERP.
+  - Phân tích và so sánh đối chiếu giá trị hiển thị trên ERP với các vị trí, định dạng trên PDF để hiểu quy luật trích xuất và ánh xạ trường dữ liệu.
+  
+- [ ] **Bước 3: Tạo thư mục Skill và Đăng ký**
+  - Tạo thư mục Skill mới: `.agents/skills/form-[tên_đối_tác_viết_thường]/`.
+  - Tạo tệp `SKILL.md` để đăng ký kỹ năng với cấu trúc:
+    ```yaml
+    ---
+    name: form-[tên_đối_tác]
+    description: Sử dụng kỹ năng này để trích xuất dữ liệu có cấu trúc từ tệp PDF hóa đơn [Tên_Đối_Tác] (invoice[X]) cho Sunouchi IT.
+    compatibility: Windows OS, Python 3.x với venv, cơ sở dữ liệu MySQL cục bộ.
+    ---
+    ```
+  
+- [ ] **Bước 4: Tạo tài liệu Quy tắc trích xuất**
+  - Tạo tệp `references/extraction_rules.md` chứa cấu trúc JSON chuẩn và hướng dẫn trích xuất chi tiết bằng Tiếng Việt cho từng trường dựa trên phân tích hình ảnh ở Bước 2.
+  - Đảm bảo gán đúng mã `customer_code` cố định nếu có quy định, và để `null` cho các trường tự động điền trên ERP (như `単価`, `金額`, `商品コード`).
+  
+- [ ] **Bước 5: Chạy thử nghiệm nghiệm thu (Dry-run)**
+  - Chạy thử trích xuất trên PDF đơn mẫu đó, lưu kết quả thô vào `data/batch_raw.json`.
+  - Thực thi lệnh đối chiếu cơ sở dữ liệu để tìm mã sản phẩm thực tế:
+    ```bash
+    venv/Scripts/python.exe scripts/run_pipeline.py --action resolve_batch --json_file data/batch_raw.json
+    ```
+  - Xác nhận kết quả JSON sinh ra khớp chính xác với ảnh ERP chụp màn hình.
 
 ---
 

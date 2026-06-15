@@ -19,17 +19,21 @@ def clean_directory(dir_path):
         shutil.rmtree(dir_path)
     os.makedirs(dir_path, exist_ok=True)
 
-def run_compress_all(input_dir, temp_dir, image_dir=None):
+def run_compress_all(input_dir, temp_dir, image_dir=None, files_to_compress=None):
     if not os.path.exists(input_dir):
         print(f"Error: Input directory {input_dir} does not exist", file=sys.stderr)
         sys.exit(1)
         
-    pdf_files = [f for f in os.listdir(input_dir) if f.lower().endswith('.pdf')]
+    if files_to_compress:
+        pdf_files = [f.strip() for f in files_to_compress if f.strip().lower().endswith('.pdf')]
+    else:
+        pdf_files = [f for f in os.listdir(input_dir) if f.lower().endswith('.pdf')]
+        
     if not pdf_files:
-        print(f"Warning: No PDF files found in {input_dir}")
+        print(f"Warning: No PDF files to process")
         return
         
-    print(f"Found {len(pdf_files)} PDF files in {input_dir} to process:")
+    print(f"Found {len(pdf_files)} PDF files to process:")
     for f in pdf_files:
         print(f"  - {f}")
         
@@ -40,7 +44,7 @@ def run_compress_all(input_dir, temp_dir, image_dir=None):
         out_path = os.path.join(temp_dir, pdf_file)
         print(f"Compressing: {pdf_file}...")
         compress_pdf(in_path, out_path, image_dir=image_dir)
-    print("All PDF files compressed successfully!")
+    print("PDF files compressed successfully!")
 
 def run_resolve_batch(batch_json_path, output_dir, temp_dir):
     # Enable terminal coloring on Windows
@@ -106,11 +110,15 @@ if __name__ == "__main__":
     parser.add_argument("--json_file", help="Path to batch raw JSON file (required for resolve_batch)")
     parser.add_argument("--output_dir", default="data/pdf/json")
     parser.add_argument("--image_dir", default="data/pdfToJPG")
+    parser.add_argument("--files", help="Comma-separated list of specific PDF filenames to process")
     
     args = parser.parse_args()
     
     if args.action == "compress_all":
-        run_compress_all(args.input_dir, args.temp_dir, args.image_dir)
+        files_to_compress = None
+        if args.files:
+            files_to_compress = args.files.split(",")
+        run_compress_all(args.input_dir, args.temp_dir, args.image_dir, files_to_compress)
     elif args.action == "resolve_batch":
         if not args.json_file:
             print("Error: --json_file is required for resolve_batch action", file=sys.stderr)
