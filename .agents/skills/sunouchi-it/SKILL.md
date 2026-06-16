@@ -17,9 +17,12 @@ Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư m
 - **`scripts/run_pipeline.py`**
   - **Mục đích**: Tự động hóa và tối ưu hóa quy trình phân loại & trích xuất PDF hàng loạt, giúp nén và đối chiếu cơ sở dữ liệu cho nhiều tệp cùng lúc để giảm số lượt tương tác của Agent.
   - **Sử dụng**:
-    - Nén tất cả PDF đầu vào:
+    - Nén tất cả hoặc các PDF đầu vào được chọn:
       ```bash
+      # Nén tất cả PDF đầu vào
       venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all
+      # Hoặc chỉ nén các PDF cụ thể (cách nhau bởi dấu phẩy)
+      venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all --files "file1.pdf,file2.pdf"
       ```
     - Giải quyết đối chiếu mã DB hàng loạt:
       ```bash
@@ -43,6 +46,17 @@ Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư m
     ```bash
     venv/Scripts/python.exe scripts/compress_pdf.py --input <đường_dẫn_pdf_gốc> --output <đường_dẫn_pdf_nén>
     ```
+- **`scripts/update_fields.py`**
+  - **Mục đích**: Sửa lỗi/nhập lại các trường thông tin Header bị sai trên màn hình ERP đang mở mà không cần nhập lại toàn bộ đơn.
+  - **Sử dụng**:
+    - Truyền trực tiếp chuỗi JSON:
+      ```bash
+      venv/Scripts/python.exe scripts/update_fields.py --fields "{\"work_name\": \"(仮称)イオンモール郡山...\"}"
+      ```
+    - Truyền qua file JSON:
+      ```bash
+      venv/Scripts/python.exe scripts/update_fields.py --json_file <đường_dẫn_file_json>
+      ```
 - **`tools/prompt_generator/onboard_prep.py`**
   - **Mục đích**: Tự động ghép cặp PDF-ERP mẫu, convert các trang PDF sang ảnh và sinh file request phục vụ quy trình Onboarding.
   - **Sử dụng**:
@@ -71,23 +85,29 @@ Làm theo danh sách kiểm tra này để xử lý các tài liệu một cách
     Tôi đã mở công cụ **Sunouchi IT**.
 
     Dưới đây là danh sách các tệp PDF đầu vào cần xử lý trong thư mục `data/pdf/PDF/`:
-    - [Tên_File_1.pdf](file:///e:/project/.agents/data/pdf/PDF/Tên_File_1_đã_url_encode.pdf)
-    - [Tên_File_2.pdf](file:///e:/project/.agents/data/pdf/PDF/Tên_File_2_đã_url_encode.pdf)
+    - [Tên_File_1.pdf](file:///<đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode>/data/pdf/PDF/Tên_File_1_đã_url_encode.pdf)
+    - [Tên_File_2.pdf](file:///<đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode>/data/pdf/PDF/Tên_File_2_đã_url_encode.pdf)
     ...
+    (* LƯU Ý: Phải thay thế <đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode> bằng đường dẫn tuyệt đối của thư mục gốc dự án thực tế trên máy chạy, ví dụ: file:///d:/SunouchiAgent/ *)
 
     Vui lòng phản hồi ("trích xuất",...) và cho biết bạn muốn xử lý bao nhiêu file để bắt đầu bước tiếp theo.
     ---
   - **BẮT BUỘC**: Chờ người dùng gửi xác nhận đồng ý (ví dụ: "đồng ý", "ok", "trích xuất",...) rồi mới được thực hiện chạy các lệnh nén hay trích xuất ở Bước 2.
-- [ ] **Bước 2: Nén tất cả các tệp PDF đầu vào trong 1 lượt**
-  - Chạy lệnh nén hàng loạt để chuyển đổi toàn bộ PDF trong thư mục nguồn sang thư mục tạm:
-    ```bash
-    venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all
-    ```
+- [ ] **Bước 2: Nén các tệp PDF đầu vào cần xử lý**
+  - Chạy lệnh nén để chuyển đổi các tệp PDF cần xử lý sang thư mục tạm:
+    - Nếu xử lý tất cả các tệp đầu vào:
+      ```bash
+      venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all
+      ```
+    - Nếu người dùng chỉ yêu cầu xử lý (các) tệp cụ thể (ví dụ: `file1.pdf` và `file2.pdf`):
+      ```bash
+      venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all --files "file1.pdf,file2.pdf"
+      ```
 - [ ] **Bước 3: Đọc và Trích xuất hàng loạt (Batch Extraction)**
-  - Liệt kê tất cả các tệp trong `data/temp_compress/`.
-  - Với mỗi tệp PDF tạm thời:
+  - Liệt kê các tệp trong `data/temp_compress/` (chỉ xử lý các tệp tương ứng với yêu cầu).
+  - Với mỗi tệp PDF tạm thời cần xử lý:
     - Sử dụng `view_file` để đọc nội dung của tệp.
-    - Phân loại tài liệu theo mẫu từ `invoice1` đến `invoice12`.
+    - Phân loại tài liệu theo mẫu từ `invoice1` đến `invoice13`.
     - Trích xuất dữ liệu thô (raw JSON) tuân thủ chính xác theo schema của mẫu hóa đơn đó.
   - Gộp tất cả dữ liệu trích xuất thô vào một tệp cấu trúc JSON duy nhất tại `data/batch_raw.json` theo định dạng sau:
     ```json
@@ -108,9 +128,10 @@ Làm theo danh sách kiểm tra này để xử lý các tài liệu một cách
     Tôi đã hoàn thành quy trình Phân loại & Trích xuất dữ liệu.
 
     Dưới đây là danh sách các tệp JSON đã được xuất thành công:
-    - [Tên_File_1.json](file:///e:/project/.agents/data/pdf/json/Tên_File_1_đã_url_encode.json) (Loại tài liệu: [Loại_Tài_Liệu_1])
-    - [Tên_File_2.json](file:///e:/project/.agents/data/pdf/json/Tên_File_2_đã_url_encode.json) (Loại tài liệu: [Loại_Tài_Liệu_2])
+    - [Tên_File_1.json](file:///<đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode>/data/pdf/json/Tên_File_1_đã_url_encode.json) (Loại tài liệu: [Loại_Tài_Liệu_1])
+    - [Tên_File_2.json](file:///<đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode>/data/pdf/json/Tên_File_2_đã_url_encode.json) (Loại tài liệu: [Loại_Tài_Liệu_2])
     ...
+    (* LƯU Ý: Phải thay thế <đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode> bằng đường dẫn tuyệt đối của thư mục gốc dự án thực tế trên máy chạy, ví dụ: file:///d:/SunouchiAgent/ *)
 
     Bạn có muốn chạy công cụ **ERP Auto-Typer** để tự động nhập dữ liệu từ các tệp JSON này vào ứng dụng ERP không?
     ---

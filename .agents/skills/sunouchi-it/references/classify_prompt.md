@@ -1,4 +1,4 @@
-Classify text into ONLY one of: "invoice1" to "invoice12". Return code ONLY (no explanation/markdown).
+Classify text into ONLY one of: "invoice1" to "invoice13". Return code ONLY (no explanation/markdown).
 
 Rules:
 - invoice1 (Furusato): Title "発注票" + Issuer "フルサト工業株式会社" + Recipient "(株) スノウチ 様" or "株式会社スノウチ 様". Exclude: "エムエム建材", "カドピタ", "コンドーテック", "KONDOTEC".
@@ -13,3 +13,4 @@ Rules:
 - invoice10 (Kondotec Special): Name "コンドーテック株式会社" or "KONDOTEC" + Title "発注書" or "注文書" + contains steel grade: BCR, BCP, STKT, GJ-R, GJ.
 - invoice11 (3D Processing): Title "引合書" (no "カドピタ") + Recipient "宛先:株式会社スノウチ" + 6 technical 3D drawings (TP, HP, SR, NS, SP, BC) + Table cols: "行番", "商品分類", "型番", "size(型番・厚さ・幅)".
 - invoice12 (Composite): Page 1 is cover "注文書" from "エムエム建材株式会社" to "株式会社スノウチ". Subsequent pages are "現寸指示書". Contains: "カドピタ", "コラム柱", "メーカー: 佐々木製罐工業" (or ササキ), "川岸工業".
+- invoice13 (Kagaya): Title "発注明細書" + Issuer "株式会社カガヤ" or "株式会社 カガヤ" + Recipient "(株) スノウチ" or "(株)スノウチ" + Table cols: "符号", "材質", "長さ", "本数".

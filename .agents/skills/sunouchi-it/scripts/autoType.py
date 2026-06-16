@@ -36,10 +36,18 @@ if os.path.exists(venv_site_packages) and venv_site_packages not in sys.path:
             pass
 
 try:
+    import win32service
+    import win32con
+    hdesk = win32service.OpenDesktop("Default", 0, False, win32con.GENERIC_ALL)
+    hdesk.SetThreadDesktop()
+    print("[*] Đã chuyển thread sang desktop 'Default' thành công.")
+except Exception as e:
+    print(f"[*] Cảnh báo: Không thể chuyển sang desktop 'Default' ở đầu script: {e}")
+
+try:
     from pywinauto import Application, Desktop
     from pywinauto import keyboard
     import win32gui
-    import win32con
 except ImportError as e:
     print("❌ Lỗi import các thư viện tự động hóa!")
     print("Vui lòng cài đặt trước bằng lệnh: pip install pywinauto pywin32")
@@ -56,15 +64,15 @@ class Logger:
 
     @staticmethod
     def success(msg):
-        print(f"[+] {msg}", flush=True)
+        print(f"[+] \033[92m{msg}\033[0m", flush=True)
 
     @staticmethod
     def warning(msg):
-        print(f"[!] {msg}", flush=True)
+        print(f"[!] \033[93m{msg}\033[0m", flush=True)
 
     @staticmethod
     def error(msg):
-        print(f"[-] {msg}", flush=True)
+        print(f"[-] \033[91m{msg}\033[0m", flush=True)
 
 
 # ============================================================================
@@ -78,6 +86,12 @@ class ERPAutotyper:
 
     def ensure_order_form_open(self):
         """Đảm bảo form nhập đơn hàng đang mở và sẵn sàng để nhập"""
+        try:
+            hdesk = win32service.OpenDesktop("Default", 0, False, win32con.GENERIC_ALL)
+            hdesk.SetThreadDesktop()
+            Logger.info("✅ Đã chuyển thread sang desktop 'Default'")
+        except Exception as e:
+            Logger.warning(f"⚠ Không thể chuyển sang desktop 'Default': {e}")
         # ====================== BƯỚC 1: TÌM FORM ĐANG MỞ ======================
         if not self.open_new_form:
             Logger.info("🔍 Đang kiểm tra form nhập đơn hàng hiện có...")
@@ -158,6 +172,11 @@ class ERPAutotyper:
             
             if not receive_btn or not receive_btn.exists():
                 Logger.error("❌ Không tìm thấy nút 受注入力 trên Menu")
+                try:
+                    Logger.info("🔍 Đang in cấu trúc điều khiển của cửa sổ Menu để chẩn đoán...")
+                    menu_window.print_control_identifiers()
+                except Exception as ex:
+                    Logger.error(f"Không thể in cấu trúc điều khiển: {ex}")
                 return False
 
             Logger.info("📝 Đang click nút 受注入力 để mở form mới...")

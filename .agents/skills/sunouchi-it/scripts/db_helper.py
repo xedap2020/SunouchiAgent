@@ -29,14 +29,14 @@ sys.path.append(project_root)
 sys.path.append(os.path.join(project_root, "sunouchi_it"))
 
 try:
-    from config.config import DB_CONFIG
+    from config import DB_CONFIG
 except ImportError:
     # Fallback default configuration if import fails
     DB_CONFIG = {
         'host': 'localhost',
         'database': 'test_sunouchiit2',
         'user': 'root',
-        'password': 'NewRoot@123!',
+        'password': '123456',
         'port': 3306
     }
 

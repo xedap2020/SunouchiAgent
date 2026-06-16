@@ -149,8 +149,8 @@ TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)  (đây là ph�
 ■ product_size: trích xuất từ cột 品名, product_size sẽ có dạng AXBC (A, B, C đều là 1 số nguyên) (dữ liệu ở cột có thể ghi là BCXA thì bạn tự chuẩn hóa về AXBC)
 - product size sẽ nằm trong các giá trị sau: 9X25, 6X25, 8X24, 9X19, 9X32, 9X50, 12X25, 12X32, 12X50, 12X70, 16X32, 12X38, 5C 8X24, 5C 9X25, 18C 9X50, 3C 9X25
 
-■ product_title: trường này có thể là GJ-R hoặc GJ hoặc Nothing (nếu trong trường hợp trên hàng sản phẩm không phải là GJ-R hoặc GJ thì bắt buộc là Nothing) (đây là quy tắc quan trọng không được bỏ qua) 
-- Nếu như product_title không phải GJ-R hoặc GJ thì bạn cứ mặc định product_title là Nothing cho mình 
+■ product_title: trường này có thể là GJ-R hoặc GJ hoặc null (nếu trong trường hợp trên hàng sản phẩm không phải là GJ-R hoặc GJ thì bắt buộc là null) (đây là quy tắc quan trọng không được bỏ qua) 
+- Nếu như product_title không phải GJ-R hoặc GJ thì bạn cứ mặc định product_title là null cho mình 
 - Trường này thường viết tay bằng mực đỏ và đôi khi sẽ chi ghi ở bản ghi đầu tiên bắt đầu từ bản ghi thứ 2 sẽ được vạch 1 mũi tên màu đỏ bắt đầu từ bản ghi đầu tiên bị ảnh hưởng đến bản ghi cuối cùng bị ảnh hưởng 
 - Vị trí của trường này thường nằm ngay sau product_size
 

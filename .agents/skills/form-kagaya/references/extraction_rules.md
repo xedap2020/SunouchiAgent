@@ -79,8 +79,12 @@ QUY TẮC TRÍCH XUẤT PHẦN HEADER
 - Trích xuất từ trường "No." ở góc trên của bảng đơn hàng hoặc trong phần email (ví dụ: `A12`, `FY-5`, `S1`, `T25`, `T26`).
 
 ■ 工事名 (Tên công trình)
-- Trích xuất từ mục "工事名" trên PDF đơn hàng.
-- Định dạng: Giữ nguyên văn bản tiếng Nhật gốc (ví dụ: `きんでん学園`).
+- Trích xuất từ mục "工事名" trên PDF đơn hàng kết hợp với thông tin cụ thể ở dòng chi tiết đầu tiên để lấy tên công trình đầy đủ nhất.
+- **QUY TẮC CHUẨN HÓA BẮT BUỘC**:
+  1. Loại bỏ khoảng trắng dư thừa sau chữ `(仮称)`. Ví dụ: `(仮称) イオンモール郡山新築工事` -> `(仮称)イオンモール郡山新築工事`.
+  2. Lấy tên công trình đầy đủ của dòng chi tiết đầu tiên để điền vào `header.工事名` (bao gồm cả hậu tố như `大梁現場溶接用 Ｂ３工区・２ＦＬ分`).
+  3. Chuyển đổi toàn bộ các ký tự chữ cái và chữ số tiếng Anh bán sỉ (half-width, ví dụ: `B3`, `2FL`, `RFL`) thành ký tự toàn sỉ (full-width, ví dụ: `Ｂ３`, `２ＦＬ`, `ＲＦＬ`) để khớp chính xác dữ liệu ERP.
+
 
 ■ 出荷日 (Ngày xuất hàng)
 - Trích xuất ngày gửi đơn hàng từ trường "発注日" hoặc thời gian gửi email trên PDF.
@@ -108,31 +112,39 @@ TRÍCH XUẤT THÔNG TIN SẢN PHẨM (tables.items)
 ============================================================
 
 ■ 長さ (Chiều dài)
-- Trích xuất giá trị số từ cột "長さ" hoặc từ ký hiệu sản phẩm (ví dụ: `330`, `380`, `370`).
-- Nếu không có thông tin chiều dài cụ thể, đặt là `null`.
+- Chỉ trích xuất giá trị số từ cột "長さ" cho loại sản phẩm "FB" (thép tấm dẹt).
+- Đối với tất cả các loại sản phẩm khác (ST, EX, AP, 特AP, CR-F, B-180, B-120) -> Gán giá trị là `null` (vì chiều dài được tích hợp trong kích thước hoặc không nhập trên dòng ERP).
 
 ■ 員数 (Số lượng)
 - Trích xuất chính xác số lượng từ cột số lượng ("本数", "数量" hoặc "個数") của sản phẩm trên PDF.
 - KHÔNG tự động chia dòng hay thay đổi số lượng dựa trên quy cách đóng gói (ERP sẽ tự tính số thùng/lẻ).
 
 ■ product_title
-- Nếu loại sản phẩm `product_type` là `"FB"` (thép tấm dẹt) hoặc `"特AP"` (Taredome) -> Gán giá trị là `null`.
-- Các trường hợp khác -> Gán giá trị mặc định là `"Nothing"`.
+- Nếu loại sản phẩm `product_type` là `"FB"` hoặc `"特AP"` -> Gán giá trị là `null`.
+- Nếu loại sản phẩm là `"ST"`, `"EX"`, hoặc `"AP"` -> Gán giá trị cố định là `"エンドタブ"` (chữ Katakana toàn chiều rộng chính xác: `エンドタブ`).
+- Nếu loại sản phẩm là `"B-180"` hoặc `"B-120"` -> Gán giá trị cố định là `"蝶番"`.
+- Các trường hợp khác -> Gán giá trị mặc định là `null`.
 
 ■ product_type (Loại sản phẩm)
 - Nhận diện loại sản phẩm dựa trên tên/ký hiệu:
   * Nếu là thép tấm dẹt -> `"FB"`
-  * Nếu ký hiệu bắt đầu bằng R -> `"CR-F"`
-  * Nếu là End Tab -> `"エﾝﾄﾞﾀﾌﾞ ST"` hoặc `"エﾝﾄﾞﾀﾌﾞ EX"`
-  * Nếu là Apron -> `"エﾌﾟﾛﾝ AP"`
+  * Nếu là thép dẹt bo tròn đầu (có R ở cột R hoặc ký hiệu R trong bản vẽ, ví dụ: 15.5R) -> `"CR-F"`
+  * Nếu là End Tab loại ST (hoặc ghi `モX` / `モ` / `ST`) -> `"ST"`
+  * Nếu là End Tab loại EX -> `"EX"`
+  * Nếu là Apron (AP) -> `"AP"`
   * Nếu là Taredome -> `"特AP"`
+  * Nếu là Bản lề dài (Hinge Long) -> `"B-180"` hoặc `"B-120"` (dựa trên ký hiệu B180型 hoặc B120型)
 
 ■ product_size (Kích thước)
-- Trích xuất kích thước sản phẩm dưới dạng kích thước mặt cắt (ví dụ: `9X25`, `12X35°`, `28X50`).
-- Đặc biệt: Nếu loại sản phẩm `product_type` là `"特AP"` (Taredome) -> Gán kích thước dưới dạng `[dày]X[rộng]XL1` (ví dụ: `9X25XL1`).
+- Trích xuất và định dạng kích thước tùy theo loại sản phẩm:
+  * Nếu là `"ST"` hoặc `"EX"` -> Định dạng `[dày]X[góc]°` (ví dụ: `12X35°`, `16X35°`).
+  * Nếu là `"AP"` -> Định dạng `[dày]X[rộng]X[dài]` (ví dụ: `12X38X50`, `16X38X50`).
+  * Nếu là `"特AP"` -> Định dạng `[dày]X[rộng]XL1` (ví dụ: `4.5X25XL1`, `9X25XL1`).
+  * Nếu là `"CR-F"` -> Định dạng `[dày]X[rộng]X[dài]` (ví dụ: `9X25X155` dựa trên độ dày, chiều rộng bản vẽ FB-9*25 và chiều dài 155).
+  * Nếu là `"FB"` hoặc Bản lề (`"B-180"`, `"B-120"`) -> Gán giá trị là `null`.
 
 ■ col_maker (Nhà sản xuất)
-- Nếu loại sản phẩm `product_type` là `"FB"` (thép tấm dẹt) hoặc `"特AP"` (Taredome) -> Gán giá trị là `null`.
+- Nếu loại sản phẩm là `"FB"`, `"特AP"`, `"B-180"`, hoặc `"B-120"` -> Gán giá trị là `null`.
 - Các trường hợp khác: Kiểm tra các từ khóa xuất hiện trên PDF để gán mã nhà sản xuất:
   * Có chữ `日鉄`, `共栄` và category là BCR -> `"NS-R"`; category là BCP -> `"NS-P"`.
   * Có chữ `知多` -> `"JFE-W"`.
@@ -140,12 +152,21 @@ TRÍCH XUẤT THÔNG TIN SẢN PHẨM (tables.items)
   * Nếu không có thông tin nhà sản xuất cụ thể -> `"ｺｳｶﾝ"`.
 
 ■ mat_size
-- Nếu là thép tấm dẹt (FB), đặt là `"FB"`. Các trường hợp khác đặt là `null`.
+- Nếu loại sản phẩm là `"FB"` -> Đặt là `"FB"`. Các trường hợp khác đặt là `null`.
 
 ■ category_small
+- Nếu loại sản phẩm là `"CR-F"` -> Đặt là `"CR-F"`.
 - Nếu dòng sản phẩm có ghi chữ BCR -> `"BCR"`; có chữ BCP -> `"BCP"`. Nếu không có thông tin -> `null`.
 
 ■ is_processing
-- Nếu sản phẩm có góc cắt vát hoặc các ký hiệu gia công bổ sung (ví dụ: góc `14°`, `35°`, hoặc ký hiệu vát cạnh như `RF0`, `TP14°`) -> Gán giá trị là `true`.
 - Nếu loại sản phẩm `product_type` là `"特AP"` (Taredome) -> LUÔN LUÔN gán giá trị là `true`.
+- Nếu sản phẩm có góc gia công vát hoặc các ký hiệu gia công bổ sung (ví dụ: góc `14°`, `35°`, hoặc ký hiệu vát cạnh như `RF0`, `TP14°` ở cột 角度/タイプ) -> Gán giá trị là `true`.
 - Các trường hợp khác: Mặc định đặt là `false` (hoặc `0`).
+
+■ 工事名 (Tên công trình) ở dòng chi tiết (items)
+- Trích xuất tên công trình cụ thể cho từng dòng sản phẩm dựa trên thông tin trên dòng đó hoặc bản vẽ/ghi chú đi kèm.
+- **QUY TẮC CHUẨN HÓA BẮT BUỘC**:
+  1. Loại bỏ khoảng trắng dư thừa sau chữ `(仮称)`. Ví dụ: `(仮称) イオンモール郡山新築工事` -> `(仮称)イオンモール郡山新築工事`.
+  2. Chuyển đổi toàn bộ các ký tự chữ cái và chữ số tiếng Anh bán sỉ (half-width, ví dụ: `B3`, `2FL`, `RFL`) thành ký tự toàn sỉ (full-width, ví dụ: `Ｂ３`, `２ＦＬ`, `ＲＦＬ`).
+  3. Đảm bảo ghép đúng tên công trình chính với phần mô tả khu vực/tầng cụ thể của dòng sản phẩm (ví dụ: `(仮称)イオンモール郡山新築工事 大梁現場溶接用 Ｂ３工区・２ＦＬ分`).
+
