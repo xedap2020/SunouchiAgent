@@ -6,3 +6,6 @@ __pycache__/
 data/pdfToJPG/
 data/temp_compress/
 data/temp_onboard/
+*.session
+data/*.session
+data/batch_raw.json
