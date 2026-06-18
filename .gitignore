@@ -9,3 +9,4 @@ data/temp_onboard/
 *.session
 data/*.session
 data/batch_raw.json
+config.py
