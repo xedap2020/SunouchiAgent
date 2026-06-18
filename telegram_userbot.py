@@ -77,8 +77,9 @@ if not is_valid_config:
     print("\n[❌] LỖI: Vui lòng cập nhật đầy đủ thông tin xác thực trong file config.py trước khi chạy!", flush=True)
     sys.exit(1)
 
-# Initialize Gemini Client
+# Initialize Gemini Client and Model
 ai_client = genai.Client(api_key=config.GEMINI_API_KEY)
+gemini_model = getattr(config, 'GEMINI_MODEL', 'gemini-2.5-flash')
 
 # Filename-based Customer Code Mapping (Sync with gemini_client.py)
 CUSTOMER_MAPPING_PROMPT = """
@@ -201,6 +202,42 @@ async def handle_new_message(event):
             await event.reply("Hiện tại tôi không có file hóa đơn nào đang chờ bạn xác nhận nhập liệu.")
         return
 
+    # 1.5. Handle product code manual correction from Telegram chat
+    p1 = re.search(r'^(?:dòng|dong|line)\s*(\d+)\s*(?::|mã|ma|code|=)?\s*([a-zA-Z0-9]+)$', message_text)
+    p2 = re.search(r'^(\d+)\s*(?::|=)\s*([a-zA-Z0-9]{3,})$', message_text)
+    match_code = p1 or p2
+    
+    if match_code:
+        if user_id in user_contexts:
+            line_num = int(match_code.group(1))
+            new_code = match_code.group(2)
+            resolved_path = user_contexts[user_id]
+            
+            try:
+                with open(resolved_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                items = data.get("tables", {}).get("items", [])
+                if 1 <= line_num <= len(items):
+                    items[line_num - 1]["商品コード"] = new_code
+                    items[line_num - 1]["found_by_search"] = True
+                    
+                    with open(resolved_path, 'w', encoding='utf-8') as f_out:
+                        json.dump(data, f_out, ensure_ascii=False, indent=2)
+                    
+                    await event.reply(
+                        f"📝 **Đã sửa dòng số {line_num}** thành mã sản phẩm: `{new_code}` thành công!\n\n"
+                        f"Bạn có muốn chạy robot **ERP Auto-Typer** ngay bây giờ không?\n"
+                        f"👉 Hãy nhắn **`y`** hoặc **`yes`** để bắt đầu."
+                    )
+                else:
+                    await event.reply(f"❌ Dòng số {line_num} không tồn tại trong danh sách sản phẩm (chỉ có {len(items)} dòng).")
+            except Exception as e:
+                await event.reply(f"❌ Lỗi khi sửa file JSON: {str(e)}")
+        else:
+            await event.reply("Hiện tại không có file hóa đơn nào đang chờ sửa mã sản phẩm.")
+        return
+
     # 2. Handle PDF file uploads
     if event.message.document:
         filename = None
@@ -246,7 +283,7 @@ async def handle_new_message(event):
                 response = await loop.run_in_executor(
                     None,
                     lambda: ai_client.models.generate_content(
-                        model="gemini-2.5-flash",
+                        model=gemini_model,
                         contents=images + [enhanced_classify_prompt]
                     )
                 )
@@ -302,7 +339,7 @@ GUIDELINES:
                 extract_response = await loop.run_in_executor(
                     None,
                     lambda: ai_client.models.generate_content(
-                        model="gemini-2.5-flash",
+                        model=gemini_model,
                         contents=images + [extract_prompt],
                         config=types.GenerateContentConfig(
                             response_mime_type="application/json"
