@@ -1,0 +1,95 @@
+{
+  "header": {
+    "受注区分": null,
+    "搬入口": null,
+    "代理店": null,
+    "出荷日": "2026/01/14",
+    "納期": "2026/01/19",
+    "出荷倉庫": null,
+    "オーダーNo": "3677",
+    "工事名": "厚木市複合施設整備事業 設計施工一括型業務(第三期業務) 2節 5階",
+    "受注担当者": null,
+    "customer_code": "420110",
+    "supplier_name": "神奈川県厚木市中町一丁目",
+    "supplier_code": "905563",
+    "supplier_tel": "9-0692",
+    "supplier_address": null,
+    "comment": "F"
+  },
+  "tables": {
+    "items": [
+      {
+        "商品コード": "00000000002000925999",
+        "長さ": 320,
+        "員数": 20,
+        "オーダーNo": "3677",
+        "工事名": "厚木市複合施設整備事業 設計施工一括型業務(第三期業務) 2節5階",
+        "product_title": null,
+        "product_type": "FB",
+        "product_size": "9X25",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000002000925999",
+        "長さ": 520,
+        "員数": 74,
+        "オーダーNo": "3677",
+        "工事名": "厚木市複合施設整備事業 設計施工一括型業務(第三期業務) 2節5階",
+        "product_title": null,
+        "product_type": "FB",
+        "product_size": "9X25",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000002000925999",
+        "長さ": 620,
+        "員数": 16,
+        "オーダーNo": "3677",
+        "工事名": "厚木市複合施設整備事業 設計施工一括型業務(第三期業務) 2節5階",
+        "product_title": null,
+        "product_type": "FB",
+        "product_size": "9X25",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000002000925999",
+        "長さ": 320,
+        "員数": 20,
+        "オーダーNo": "3677",
+        "工事名": "厚木市複合施設整備事業 設計施工一括型業務(第三期業務) 2節7階",
+        "product_title": null,
+        "product_type": "FB",
+        "product_size": "9X25",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000002000925999",
+        "長さ": 520,
+        "員数": 64,
+        "オーダーNo": "3677",
+        "工事名": "厚木市複合施設整備事業 設計施工一括型業務(第三期業務) 2節7階",
+        "product_title": null,
+        "product_type": "FB",
+        "product_size": "9X25",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000002000925999",
+        "長さ": 620,
+        "員数": 26,
+        "オーダーNo": "3677",
+        "工事名": "厚木市複合施設整備事業 設計施工一括型業務(第三期業務) 2節7階",
+        "product_title": null,
+        "product_type": "FB",
+        "product_size": "9X25",
+        "is_processing": true,
+        "found_by_search": true
+      }
+    ]
+  }
+}

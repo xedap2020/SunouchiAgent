@@ -1,0 +1,110 @@
+{
+  "header": {
+    "受注区分": null,
+    "搬入口": null,
+    "代理店": null,
+    "出荷日": "2026/02/24",
+    "納期": "2026/02/25",
+    "出荷倉庫": null,
+    "オーダーNo": "259766",
+    "工事名": "日本蓄電器工業（株）本社社屋工事（事務所棟）",
+    "受注担当者": null,
+    "customer_name1": null,
+    "customer_name2": null,
+    "customer_code": "371500",
+    "supplier_name": "フルサト工業(株) 仙台北事業所",
+    "supplier_code": "140671",
+    "supplier_postal_code": "981-4263",
+    "supplier_tel": "0229-63-7671",
+    "agent": "25",
+    "comment": "F"
+  },
+  "tables": {
+    "items": [
+      {
+        "商品コード": "00000000001930925060",
+        "長さ": null,
+        "員数": 8,
+        "オーダーNo": "259766",
+        "工事名": "日本蓄電器工業（株）本社社屋工事（事務所棟）",
+        "product_title": null,
+        "product_type": "CR-F",
+        "product_size": "9X25X60",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000001930925075",
+        "長さ": null,
+        "員数": 224,
+        "オーダーNo": "259766",
+        "工事名": "日本蓄電器工業（株）本社社屋工事（事務所棟）",
+        "product_title": null,
+        "product_type": "CR-F",
+        "product_size": "9X25X75",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000001930925085",
+        "長さ": null,
+        "員数": 236,
+        "オーダーNo": "259766",
+        "工事名": "日本蓄電器工業（株）本社社屋工事（事務所棟）",
+        "product_title": null,
+        "product_type": "CR-F",
+        "product_size": "9X25X85",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000001930925090",
+        "長さ": null,
+        "員数": 32,
+        "オーダーNo": "259766",
+        "工事名": "日本蓄電器工業（株）本社社屋工事（事務所棟）",
+        "product_title": null,
+        "product_type": "CR-F",
+        "product_size": "9X25X90",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000001930925100",
+        "長さ": null,
+        "員数": 156,
+        "オーダーNo": "259766",
+        "工事名": "日本蓄電器工業（株）本社社屋工事（事務所棟）",
+        "product_title": null,
+        "product_type": "CR-F",
+        "product_size": "9X25X100",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000001930925110",
+        "長さ": null,
+        "員数": 628,
+        "オーダーNo": "259766",
+        "工事名": "日本蓄電器工業（株）本社社屋工事（事務所棟）",
+        "product_title": null,
+        "product_type": "CR-F",
+        "product_size": "9X25X110",
+        "is_processing": true,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "00000000001930925160",
+        "長さ": null,
+        "員数": 96,
+        "オーダーNo": "259766",
+        "工事名": "日本蓄電器工業（株）本社社屋工事（事務所棟）",
+        "product_title": null,
+        "product_type": "CR-F",
+        "product_size": "9X25X160",
+        "is_processing": true,
+        "found_by_search": true
+      }
+    ]
+  }
+}

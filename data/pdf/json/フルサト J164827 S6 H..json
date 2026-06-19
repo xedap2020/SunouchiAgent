@@ -1,0 +1,50 @@
+{
+  "header": {
+    "受注区分": null,
+    "搬入口": null,
+    "代理店": null,
+    "出荷日": "2026/02/10",
+    "納期": "2026/02/12",
+    "出荷倉庫": null,
+    "オーダーNo": "201760",
+    "工事名": "ダイビル　６節残工区",
+    "受注担当者": null,
+    "customer_name1": null,
+    "customer_name2": null,
+    "customer_code": "371500",
+    "supplier_name": "(株)日成興産",
+    "supplier_code": "111980",
+    "supplier_postal_code": "061-3244",
+    "supplier_tel": "0133-64-6464",
+    "agent": "20",
+    "comment": "F"
+  },
+  "tables": {
+    "items": [
+      {
+        "商品コード": "0000000000000152535",
+        "長さ": null,
+        "員数": 16,
+        "オーダーNo": "201760",
+        "工事名": "ダイビル　６節残工区",
+        "product_title": null,
+        "product_type": "L型",
+        "product_size": "25X35°",
+        "is_processing": false,
+        "found_by_search": true
+      },
+      {
+        "商品コード": "0000000000000145036",
+        "長さ": null,
+        "員数": 8,
+        "オーダーNo": "201760",
+        "工事名": "ダイビル　６節残工区",
+        "product_title": null,
+        "product_type": "AP",
+        "product_size": "36X38X50",
+        "is_processing": false,
+        "found_by_search": true
+      }
+    ]
+  }
+}

@@ -67,7 +67,7 @@ def run_resolve_batch(batch_json_path, output_dir, temp_dir):
         output_filename = f"{base_name}.json"
         
         print(f"Resolving: {filename}...")
-        resolved_json = db_helper.resolve_codes(raw_json)
+        resolved_json = db_helper.resolve_codes(raw_json, filename=filename)
         
         # Collect warnings
         warnings = resolved_json.get("mapping_warnings", [])

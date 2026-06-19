@@ -368,7 +368,7 @@ def search_supplier_code(cursor, supplier_name=None, supplier_name2=None, suppli
         print(f"Error searching supplier: {e}", file=sys.stderr)
     return None
 
-def resolve_codes(data):
+def resolve_codes(data, filename=None):
     """Nhận JSON trích xuất thô và đối chiếu tìm kiếm các mã trong database"""
     if not isinstance(data, dict):
         return data
@@ -384,6 +384,29 @@ def resolve_codes(data):
         header = data.get("header", {})
         customer_code = header.get("customer_code")
         
+        # Resolve customer_code from filename (takes highest precedence)
+        if header:
+            if not filename:
+                filename = data.get("_original_filename")
+            if filename:
+                clean_filename = os.path.basename(filename)
+                try:
+                    mapping_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "customer_mapping.json")
+                    if os.path.exists(mapping_path):
+                        with open(mapping_path, 'r', encoding='utf-8') as f_map:
+                            mapping_data = json.load(f_map)
+                        # Sort by length descending to match longest keyword first
+                        mapping_data = sorted(mapping_data, key=lambda x: len(x.get("keyword", "")), reverse=True)
+                        for item in mapping_data:
+                            kw = item.get("keyword")
+                            code = item.get("customer_code")
+                            if kw and code and kw in clean_filename:
+                                header["customer_code"] = code
+                                customer_code = code
+                                break
+                except Exception as e:
+                    print(f"Error resolving customer code from filename: {e}", file=sys.stderr)
+
         # Keep track of initial presence of customer name fields
         has_cust_names = False
         c_name1 = None
@@ -545,14 +568,16 @@ if __name__ == "__main__":
             
     elif args.action == "resolve":
         raw_data = None
+        filename_val = None
         if args.json_file:
             with open(args.json_file, 'r', encoding='utf-8') as f:
                 raw_data = json.load(f)
+            filename_val = os.path.basename(args.json_file).replace(".json", ".pdf")
         elif args.json_str:
             raw_data = json.loads(args.json_str)
         else:
             print("Error: Either --json_file or --json_str is required for resolve", file=sys.stderr)
             sys.exit(1)
             
-        resolved = resolve_codes(raw_data)
+        resolved = resolve_codes(raw_data, filename=filename_val)
         print(json.dumps(resolved, ensure_ascii=False, indent=2))
