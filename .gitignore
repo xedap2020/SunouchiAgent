@@ -10,3 +10,4 @@ data/temp_onboard/
 data/*.session
 data/batch_raw.json
 config.py
+data/admin_chats.json
