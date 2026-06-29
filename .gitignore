@@ -11,3 +11,14 @@ data/*.session
 data/batch_raw.json
 config.py
 data/admin_chats.json
+
+# Local caches, database and state
+.cache/
+.n8n/
+data/telegram_conversations.json
+
+# PDF inputs and JSON outputs
+data/pdf/PDF/
+data/pdf/json/
+data/pdf/NewForm/*
+!data/pdf/NewForm/.gitkeep

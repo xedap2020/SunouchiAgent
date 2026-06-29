@@ -179,11 +179,22 @@ Hướng dẫn Agent cách hỗ trợ người dùng khi họ muốn thiết l�
 ### Cách sử dụng & Kích hoạt
 Khi người dùng yêu cầu:
 - *"Tôi muốn thiết lập form mới"*, *"Tạo prompt cho hóa đơn mới"* hoặc hỏi các câu tương tự liên quan đến cách dạy/thiết lập form mới:
-  -> Agent **BẮT BUỘC** phải gửi hướng dẫn chuẩn bị tài liệu cho người dùng trước tiên:
-     1. Đặt các tệp PDF đơn hàng gốc và ảnh chụp ERP tương ứng vào thư mục `data/pdf/NewForm/`.
-     2. Đặt tên tệp giống nhau hoàn toàn để hệ thống tự khớp cặp (ví dụ: `TenĐốiTác_J123456.pdf` và `TenĐốiTác_J123456.png`).
-     3. Khuyên họ dùng từ 2-3 tệp mẫu để có độ chính xác cao nhất.
-     4. Bảo người dùng phản hồi *"Chạy script chuẩn bị"* sau khi đã để các file vào đúng chỗ.
+  -> Agent **BẮT BUỘC** phải gửi hướng dẫn chuẩn bị tài liệu theo mẫu chuẩn sau đây để đảm bảo người dùng dễ hiểu:
+     
+     Để giúp trợ lý AI tự động học cách đọc biểu mẫu (form) hóa đơn/đơn hàng mới, bạn chỉ cần thực hiện 3 bước đơn giản sau:
+
+     1. **Chuẩn bị file mẫu**:
+        * Lấy file PDF đơn hàng gốc của đối tác.
+        * Chụp ảnh màn hình ERP (phần thông tin đơn hàng này sau khi bạn đã nhập thủ công vào ERP).
+        * Đặt cả file PDF và file ảnh này vào thư mục **[NewForm](file:///E:/SunouchiAgent/data/pdf/NewForm/)**.
+
+     2. **Đặt tên file giống nhau**:
+        * Hãy đặt tên file PDF và file ảnh ERP **giống hệt nhau** để trợ lý tự động đối chiếu thông tin.
+        * *Ví dụ*: `Kagaya_J166817.pdf` đi kèm với `Kagaya_J166817.png` (hoặc `.jpg`).
+        *(Mẹo nhỏ: Bạn nên chuẩn bị từ 2-3 đơn hàng mẫu khác nhau để trợ lý học chính xác hơn).*
+
+     3. **Bắt đầu**:
+        * Sau khi đã copy các file mẫu vào đúng vị trí, bạn chỉ cần nhắn: **"Chạy script chuẩn bị"** để bắt đầu quy trình học form mới.
 
 - *"Chạy script chuẩn bị form mới"* hoặc *"Chuẩn bị các tệp đơn hàng mới"* -> Chạy script `onboard_prep.py`.
 - *"Hãy phân tích các mẫu đã chuẩn bị và đóng gói thành Skill mới cho [Tên_Đối_Tác]"* -> Agent tự thực hiện phân tích và sinh Skill mới.
