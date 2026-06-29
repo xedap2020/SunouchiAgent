@@ -2,40 +2,41 @@
 OUTPUT SHAPE (CẤU TRÚC JSON ĐẦU RA BẮT BUỘC)
 ============================================================
 {
-    "header": {
-        "受注区分": null,
-        "搬入口": null,
-        "代理店": null,
-        "出荷日": null,
-        "納期": null,
-        "出荷倉庫": null,
-        "オーダーNo": null,
-        "工事名": null,
-        "受注担当者": null,
-        "customer_name1": null,
-        "customer_name2": null,
-        "customer_code": null,
-        "supplier_name": null,
-        "supplier_code": null,
-        "supplier_postal_code": null,
-        "supplier_tel": null
-    },
-    "tables": {
-        "items": [
-            {
-                "商品コード": null,
-                "長さ": null,
-                "員数": null,
-                "オーダーNo": null,
-                "工事名": null,
-                "product_title": null,
-                "product_type": null,
-                "product_size": null,
-                "is_processing": null
+
+                "header": {
+                    "受注区分": null,
+                    "搬入口": null,
+                    "代理店": null,
+                    "出荷日": null,
+                    "納期": null,
+                    "出荷倉庫": null,
+                    "オーダーNo": null,
+                    "工事名": null,
+                    "受注担当者": null,
+                    "customer_name1": null,
+                    "customer_name2": null,
+                    "customer_code": null,
+                    "supplier_name": null,
+                    "supplier_code": null,
+                    "supplier_postal_code": null,
+                    "supplier_tel": null 
+                },
+              "tables": {
+                    "items": [
+	{
+                            "商品コード": null,
+                            "長さ": null,
+	 "員数": null,
+	 "オーダーNo": null,
+	 "工事名": null,
+	 "product_title": null,
+	 "product_type": null,
+	 "product_size": null,
+                            "is_processing": null
+	}
+                    ]
+                }
             }
-        ]
-    }
-}
 
 ============================================================
 RULES (QUY TẮC TRÍCH XUẤT)

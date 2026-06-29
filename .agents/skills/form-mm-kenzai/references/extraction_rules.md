@@ -213,9 +213,9 @@ TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)  (đây là ph�
 - Ví dụ: カドピタ9X25平BCR 250X 12 thì product_size chính là 9X25 
 - product size sẽ nằm trong các giá trị sau: 9X25, 6X25, 8X24, 9X19, 9X32, 9X50, 12X25, 12X32, 12X50, 12X70, 16X32, 12X38, 5C 8X24, 5C 9X25, 18C 9X50, 3C 9X25
 
-■ product_title: trường này sẽ nằm ngay đằng sau カドピタ trường này có thể là GJ-R hoặc GJ hoặc null (nếu trong trường hợp đằng sau không phải là GJ-R hoặc GJ thì bắt buộc là null) (đây là quy tắc quan trọng không được bỏ qua) 
-- Nếu như product_title không phải GJ-R hoặc GJ thì bạn cứ mặc định product_title là null cho mình 
-- Ví dụ: カドピタ9X25平BCR 250X 12 thì product_title chính là null, カドピタGJ-R 12X50 4X18C 400X 16 thì product_title chính là GJ-R,  カドピタGJ 12X50 4X18C 400X 16 thì product_title chính là GJ
+■ product_title: trường này sẽ nằm ngay đằng sau カドピタ trường này có thể là GJ-R hoặc GJ hoặc Nothing (nếu trong trường hợp đằng sau không phải là GJ-R hoặc GJ thì bắt buộc là Nothing) (đây là quy tắc quan trọng không được bỏ qua) 
+- Nếu như product_title không phải GJ-R hoặc GJ thì bạn cứ mặc định product_title là Nothing cho mình 
+- Ví dụ: カドピタ9X25平BCR 250X 12 thì product_title chính là Nothing, カドピタGJ-R 12X50 4X18C 400X 16 thì product_title chính là GJ-R,  カドピタGJ 12X50 4X18C 400X 16 thì product_title chính là GJ
 
 ■ col_maker: trường này sẽ đọc ở ngay bên dưới カドピタ và thường được căn giữa ở dưới cùng của cái ô đấy, trường này có thể sẽ được viết tay nên bạn phải đọc thật kỹ
 - Nếu như mà gặp chữ 日鉄, 日鉄建材, ニッテツ, 共栄, ｷｮｳｴｲ, 日建 và category_small là BCR thì col_maker là NS-R còn category_small là BCP thì col_maker là NS-P 

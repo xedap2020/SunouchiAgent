@@ -128,9 +128,9 @@ BƯỚC 3: Công thức thiết lập giá trị cuối cùng cho `product_type`
 - product size sẽ chỉ có thể là 1 trong các giá trị sau 1 trong các giá trị sau: 9X25, 6X25, 8X24, 9X19, 9X32, 9X50, 12X25, 12X32, 12X50, 12X70, 16X32, 12X38
 - Bạn cần phải trích xuất chính xác giá trị có trong cột サイズ không được đoán bừa  
 
-■ product_title: trường này sẽ trích xuất từ cột 面取り trường này có thể là GJ-R hoặc GJ hoặc null 
-- Nếu cột 右図 có giá trị là 右図 thì product_title là null 
-- Nếu như product_title không phải GJ-R hoặc GJ thì bạn cứ mặc định product_title là null cho mình 
+■ product_title: trường này sẽ trích xuất từ cột 面取り trường này có thể là GJ-R hoặc GJ hoặc Nothing 
+- Nếu cột 右図 có giá trị là 右図 thì product_title là Nothing 
+- Nếu như product_title không phải GJ-R hoặc GJ thì bạn cứ mặc định product_title là Nothing cho mình 
 
 ■ col_maker: trường này sẽ đọc ở cột コラムメーカー
 - Nếu như mà gặp chữ 日鉄, 日鉄建材, ニッテツ, 共栄, ｷｮｳｴｲ, 日建 và category_small là BCR thì col_maker là NS-R còn category_small là BCP thì col_maker là NS-P 

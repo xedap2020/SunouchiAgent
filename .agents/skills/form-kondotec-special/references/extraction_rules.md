@@ -194,9 +194,9 @@ CHỈ hiển thị (các) mã 4 chữ số tìm được. Không giải thích, 
 - Trường này trích xuất từ cột "品名・規格・サイズ" 
 - Còn nếu như giá trị của cột 品名・規格・サイズ có chữ GJ thì giá trị của product_title là GJ
 - Còn nếu như giá trị của cột 品名・規格・サイズ có chữ GJ-R thì giá trị của product_title là GJ-R
-- Còn nếu như giá trị của cột 品名・規格・サイズ không có chữ GJ-R hoặc GJ thì giá trị của product_title là null
-- ĐÂY LÀ TRƯỜNG QUAN TRỌNG KHÔNG ĐƯỢC BỎ QUA 
-- Nếu không phải GJ-R hoặc GJ thì giá trị của product_title phải là null để đối chiếu chính xác với cơ sở dữ liệu.
+- Còn nếu như giá trị của cột 品名・規格・サイズ không có chữ GJ-R hoặc GJ thì giá trị của product_title là Nothing
+- ĐÂY LÀ TRƯỜNG QUA TRỌNG KHÔNG ĐƯỢC BỎ QUA 
+- 1 SẢN PHẨM BẮT BUỘC SẼ CÓ 1 product_title NÊN TRƯỜNG NÀY KHÔNG ĐƯỢC ĐỂ NULL 
 - Nếu giá trị của cột 品名・規格・サイズ có chữ GJR thì giá trị của product_title là GJ-R
 
 ■ col_maker: trường này sẽ trích xuất từ cột "品名・規格・サイズ", trường này có thể sẽ được viết tay nên bạn phải đọc thật kỹ 

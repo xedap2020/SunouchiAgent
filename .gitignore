@@ -6,3 +6,7 @@ __pycache__/
 data/pdfToJPG/
 data/temp_compress/
 data/temp_onboard/
+.cache/
+.n8n/
+data/admin_chats.json
+data/telegram_conversations.json

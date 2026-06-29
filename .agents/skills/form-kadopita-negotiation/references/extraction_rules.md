@@ -147,7 +147,7 @@ TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)  (đây là ph�
 - [QUY TẮC Ô TIÊU ĐỀ GỘP DỌC]: Cột này có phần tiêu đề (Header) là ô gộp dọc (Multirow/Rowspan) gồm 2 dòng chữ cố định là "テーパー※4" (hoặc "テーパー〈分類4〉") ở trên và "GJ・GJ-R" ở dưới. 
 - TUYỆT ĐỐI KHÔNG trích xuất các chữ cố định của tiêu đề gộp này để điền cho dữ liệu hàng. Chỉ bốc dữ liệu nằm hoàn toàn PHÍA DƯỚI thanh ngăn cách ngang của tiêu đề chính.
 - Trường này có thể có các giá trị thực tế viết/in bên dưới là: GJ-R, GJ, hoặc để trống.
-- Tuyệt đối phải lấy đúng giá trị thực tế ghi trong cột tương ứng với hàng đó, KHÔNG ĐƯỢC đoán bừa. Nếu ô dữ liệu của hàng đó để TRỐNG, product_title bắt buộc phải gán giá trị là null.
+- Tuyệt đối phải lấy đúng giá trị thực tế ghi trong cột tương ứng với hàng đó, KHÔNG ĐƯỢC đoán bừa. Nếu ô dữ liệu của hàng đó để TRỐNG, product_title bắt buộc phải gán giá trị là "Nothing".
 - Tuyệt đối không được đoán nhầm GJ・GJ-R ở trên header phải truy xuất đúng hàng [ĐÂY LÀ QUY TẮC ĐẶC BIỆT QUAN TRỌNG BỞI VÌ ĐỌC SAI TRƯỜNG NÀY SẼ ĐỌC SAI TẤT CẢ]
 
 ■ col_maker: trường này sẽ đọc ở ngay bên dưới カドピタ và thường được căn giữa ở dưới cùng của cái ô đấy, trường này có thể sẽ được viết tay nên bạn phải đọc thật kỹ 
