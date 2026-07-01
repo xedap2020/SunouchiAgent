@@ -1,0 +1,40 @@
+{
+  "header": {
+    "受注区分": "本受注",
+    "搬入口": "安田様",
+    "代理店": "016201",
+    "出荷日": "2026/06/30",
+    "納期": "2026/07/01",
+    "出荷倉庫": "東広島倉庫",
+    "オーダーNo": null,
+    "工事名": "365301",
+    "受注担当者": "松山咲良",
+    "customer_name1": "マツモト産業株式会社",
+    "customer_name2": "四国支店",
+    "customer_code": "400050",
+    "matsumoto_customer": null,
+    "supplier_name": "四国酸素(株)　本社",
+    "supplier_code": "621020",
+    "supplier_postal_code": null,
+    "supplier_tel": null,
+    "shipping_warehouse": null,
+    "agent": "016201",
+    "matsumoto_agent": null,
+    "comment": "高松分"
+  },
+  "tables": {
+    "items": [
+      {
+        "商品コード": "0000000000000410025",
+        "長さ": null,
+        "員数": "400",
+        "オーダーNo": "PA0F33494101",
+        "工事名": "365301",
+        "product_title": null,
+        "product_type": null,
+        "product_size": null,
+        "is_processing": false
+      }
+    ]
+  }
+}

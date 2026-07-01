@@ -50,3 +50,6 @@
   * "星和" → customer_code = "230100"
   * "日鉄物産東北" → customer_code = "311030"
   * "日鉄物産九州" → customer_code = "311040"
+
+- **Ưu tiên thực thi trực tiếp theo công cụ/kỹ năng được yêu cầu**: Khi người dùng yêu cầu rõ ràng việc sử dụng một công cụ hoặc kỹ năng cụ thể (ví dụ: *"sử dụng công cụ erp-correct-extractor"*, *"chạy autoType.py"*...), bạn **BẮT BUỘC** phải thực hiện chính xác công cụ hoặc kỹ năng đó theo đúng tài liệu hướng dẫn của nó. **TUYỆT ĐỐI KHÔNG** tự ý thực hiện thêm các bước suy luận ngoài lề, phân tích lỗi, so sánh kết quả hoặc tự động chạy tiếp các pipeline khác ngoài phạm vi yêu cầu của công cụ đó trừ khi người dùng yêu cầu thêm.
+

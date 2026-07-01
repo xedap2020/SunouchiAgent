@@ -29,6 +29,7 @@ OUTPUT SHAPE (CẤU TRÚC JSON ĐẦU RA BẮT BUỘC)
                 "product_title": null,
                 "product_type": null,
                 "product_size": null,
+                "category_small": null,
                 "is_processing": null
             }
         ]
@@ -133,13 +134,15 @@ TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)  (đây là ph�
 	+ trong trường hợp có chữ CR hoặc NS hoặc NS15° (trừ CR-F và NS45°) (vị trí chữ CR hoặc NS hoặc NS15° có thể nằm ở cùng hàng với hàng sản phẩm nhưng cũng có thể nằm ở bên dưới các hàng sản phẩm gần bản vẽ kỹ thuật, lúc này tất cả các bản ghi bên trên của trang đấy sẽ bị ảnh hưởng, chữ CR, NS, NS15° có thể viết tay)  thì product_type là FB và product_size sẽ có 2 trường hợp xảy ra
 		- nếu ký tự ở 長 サ mà nhỏ hơn 80 thì product_size sẽ là là 9X25X hoặc 9X32X tùy thuộc vào hàng sản phẩm đấy hiển thị 9X25 hay 9X32  (Lưu ý : product_size lúc này sẽ chỉ là 9X25X  hoặc 9X32X  không X thêm số gì vào sau) và 長さ sẽ là con số ở cột 長 サ
 		- nếu ký tự ở 長 サ mà lớn hơn 80 thì product_size là 9X25Xsố ở cột 長 サ hoặc 9X32Xsố ở cột 長 サ tùy thuộc vào hàng sản phẩm đấy hiển thị 9X25 hay 9X32 
-	+ trường hợp nếu gặp 2 hàng sản phẩm 1 cái là LL-A 65X65X6 và 1 cái là LL-B 50X50X6 thì 2 cái hàng sản phẩm đấy bạn sẽ trích xuất ra 1 hàng sản phẩm trong json có product_type là ＬＬタイプ và product_size của nó là null 
+	+ trường hợp nếu gặp các hàng sản phẩm là LL-A (L 65x65x6) và LL-B (L 50x50x6) thì trích xuất thành 1 hàng sản phẩm trong json có: product_type là null, product_size là null, product_title là null, và category_small là "LL蝶番"
+	+ trường hợp nếu gặp 2 hàng sản phẩm 1 cái là LL-A 65X65X6 và 1 cái là LL-B 50X50X6 thì 2 cái hàng sản phẩm đấy bạn sẽ trích xuất ra 1 hàng sản phẩm trong json có: product_type là null, product_size là null, product_title là null, và category_small là "LL蝶番"
 	+ trường hợp mà ngay ở dưới các hàng sản phẩm có chữ CR-F thì product_type của tất cả các sản phẩm bên trên là CR-F 
 	+ đôi khi sẽ có những trường hợp là người ta gạch product_type cũ được in bằng mực đen đi và ghi lại bằng mục đỏ thì bạn phải lấy product_type được ghi lại bằng mục đỏ (ví dụ họ hoàn toàn có thể gạch bỏ EX đi và ghi 1 loại product_type khác ở bên cạnh như ST chẳng hạn , product_type mới được ghi lại có thể nằm ở bên trên, bên cạnh hoặc bên dưới  product_type cũ không nhất thiết phải cùng hàng đấy)
 	+ Một số  product_type khác có thể gặp: B-120, B-180, VS, VM, VL, VB-55, VB-75, VB-110, VWS, VW, VWB, VM-30, VL-30, VB-5530, VS-4, VM-4, VL-4, VL-25, VB-25, FS, FM, FL, FB-55, FB-75, FB-110, FWS, FW, FWB, FWN-20, FWN-32, FM-30, FL-30, FB-5530, FS-4, FM-4, FL-4, FM-25, FL-25, FB-25, FB-7525, FM-328, FL-340, SC, SC-3T, SC-4T, SC-5, RT-25, A, AW, AW-2, A-50, A-80, A-110, DF-40, DF-55, DF-75, DF-120, CP-40, CP-50, CP-100, YV-25, FMG-28, FHT-30, YHR-25N, YHR-32N, YHR-50N, ND, TR-25, TR-40, VSHD, VLHD, JS, L-1, L-2, LB-12, LB-17, LCB-19, LCB-20, LB-23T, LCB-27T, LCB-29T, LB-46T, RV-3245, RV-3250, RV-3255, SRF-30, SRF-40, CAT-30, NST-1, VW-32R, VW-55R, CAT-16, BPX140-35, IT-50, PSK-50, PSK-503, SS, V-S, V-M, V-L, F-S, F-M, F-L, CBW-30NP, TGW-30L, CBW-G34NP, CBW-F40NP, CBW-271NP, CBW-276NP, CBW-TR90NP, CBW-07φNP, CBW-10φNP, CBW-12φNP, CBW-15φNP, CBW-S01NP, CBW-S02NP, CBW-S03NP, CBW-3C, CBW-36, CBW-J27, CBW-TR901, CBWR300TR, CBWR300G35, CBX-S02, CBX-F30P, CBX-30KG, CBM8067, CBX-WTD16, CBX-WTD41, CBX-WTD51, P-S, P-L, TC-25, TC-40
 	+ Nếu gặp các chữ giống với một số product_type có thể gặp mà các chữ đấy không có dấu gạch ngang ở giữa thì bạn tự chủ động thêmdấu gạch ngang vào (ví dụ: CP40 -> CP-40)
 ■ product_size:
 	+ trong trường hợp product_type là AP, CR-F thì product_size lấy ở cột 品名 và 長サ, product_size lúc này sẽ có dạng 品名 là 16X38 thì  (ví dụ: 品名 là 16X38 và 長サ là 50 thì product_size lúc này là 16X38X50) 
+	+ trong trường hợp product_type là L型, EX, ST thì product_size lấy ở 品名 và cột 長サ. Nếu cột 品名 có chứa chiều rộng (thường ghi dạng PL [độ dày] x 38) và cột 長サ ghi góc vát (dạng [góc]°), thì product_size chỉ lấy dạng [độ dày]X[góc vát]° (bỏ qua kích thước chiều rộng 38). Ví dụ: 品名 là PL 12 x 38 và 長サ là 35° thì product_size là 12X35°. Ví dụ: 品名 là PL 16 x 38 và 長サ là 45° thì product_size là 16X45°.
 	+ trong trường hợp product_type là L型, EX thì product_size lấy ở 品名, product_size lúc này sẽ có dạng AXB° (A,B là 1 số nguyên, ví dụ: 品名 là 22X45° thì product_size là 22X45°)
 	+ trong trường hợp file pdf không có dấu X thì bạn phải tự bổ sung vào
 	+ trong trường hợp product_type là K型 thì product_size lấy ở 品名 nhưng chỉ lấy số đầu tiên (ví dụ: 品名 là 32  45/60 thì product_size là 32)

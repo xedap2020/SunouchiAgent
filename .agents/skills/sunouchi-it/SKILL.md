@@ -65,41 +65,73 @@ Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư m
     ```
 ---
 
-## 1. Bộ phân loại & Trích xuất PDF
-
-Thực hiện phân loại và trích xuất dữ liệu từ các tài liệu PDF/hình ảnh (hóa đơn, đơn đặt hàng, bản vẽ) bằng ngữ cảnh mô hình của Agent, sau đó ánh xạ dữ liệu trích xuất với mã cơ sở dữ liệu (sản phẩm, khách hàng, nhà cung cấp) bằng cách kết nối trực tiếp với cơ sở dữ liệu MySQL cục bộ.
-
-### Cách sử dụng
-Là người dùng, bạn có thể yêu cầu:
-- *"Chạy PDF Classifier cho file <đường dẫn file>"* (chạy tool phân loại và trích xuất dựa trên đường dẫn file cục bộ)
-- *"Tôi có những tool gì?"* (xem danh sách công cụ hiện có)
-
-### Danh sách kiểm tra quy trình (Tối ưu hóa hàng loạt - Khuyên dùng)
-Làm theo danh sách kiểm tra này để xử lý các tài liệu một cách hiệu quả và tiết kiệm lượt tương tác:
-
-- [ ] **Bước 1: Xác định và hiển thị các tệp đầu vào**
-  - Thư mục đầu vào chứa các tệp PDF gốc: `data/pdf/PDF/`.
+## 1. Bộ ph�- [ ] **Bước 1: Xác định và hiển thị các tệp đầu vào**
+  - Thư mục đầu vào chứa các tệp PDF gốc: `data/pdf/PDF/` hoặc thư mục sửa lỗi `data/pdf/Fixbug/`.
   - **BẮT BUỘC**: Phải phản hồi theo đúng cấu trúc mẫu cố định sau đây để đảm bảo tính nhất quán (không tự ý thêm bớt từ ngữ ngoài mẫu này):
-    
-    ---
-    Tôi đã mở công cụ **Sunouchi IT**.
+    - Dành cho thư mục `data/pdf/PDF/`:
+      
+      ---
+      Tôi đã mở công cụ **Sunouchi IT**.
 
-    Dưới đây là danh sách các tệp PDF đầu vào cần xử lý trong thư mục `data/pdf/PDF/`:
-    - [Tên_File_1.pdf](file:///<đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode>/data/pdf/PDF/Tên_File_1_đã_url_encode.pdf)
-    - [Tên_File_2.pdf](file:///<đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode>/data/pdf/PDF/Tên_File_2_đã_url_encode.pdf)
-    ...
-    (* LƯU Ý: Phải thay thế <đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode> bằng đường dẫn tuyệt đối của thư mục gốc dự án thực tế trên máy chạy, ví dụ: file:///d:/SunouchiAgent/ *)
+      Dưới đây là danh sách các tệp PDF đầu vào cần xử lý trong thư mục `data/pdf/PDF/`:
+      - [Tên_File_1.pdf](file:///<đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode>/data/pdf/PDF/Tên_File_1_đã_url_encode.pdf)
+      - [Tên_File_2.pdf](file:///<đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode>/data/pdf/PDF/Tên_File_2_đã_url_encode.pdf)
+      ...
+      (* LƯU Ý: Phải thay thế <đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode> bằng đường dẫn tuyệt đối của thư mục gốc dự án thực tế trên máy chạy, ví dụ: file:///d:/SunouchiAgent/ *)
 
-    Vui lòng phản hồi ("trích xuất",...) và cho biết bạn muốn xử lý bao nhiêu file để bắt đầu bước tiếp theo.
-    ---
+      Vui lòng phản hồi ("trích xuất",...) và cho biết bạn muốn xử lý bao nhiêu file để bắt đầu bước tiếp theo.
+      ---
+    - Dành cho thư mục `data/pdf/Fixbug/`:
+      
+      ---
+      Tôi đã mở công cụ **Sunouchi IT**.
+
+      Dưới đây là danh sách các tệp PDF đầu vào cần xử lý trong thư mục `data/pdf/Fixbug/`:
+      - [Tên_File_1.pdf](file:///<đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode>/data/pdf/Fixbug/Tên_File_1_đã_url_encode.pdf)
+      ...
+      (* LƯU Ý: Phải thay thế <đường_dẫn_thư_mục_gốc_dự_án_đã_url_encode> bằng đường dẫn tuyệt đối của thư mục gốc dự án thực tế trên máy chạy, ví dụ: file:///d:/SunouchiAgent/ *)
+
+      Vui lòng phản hồi ("trích xuất",...) và cho biết bạn muốn xử lý bao nhiêu file để bắt đầu bước tiếp theo.
+      ---
   - **BẮT BUỘC**: Chờ người dùng gửi xác nhận đồng ý (ví dụ: "đồng ý", "ok", "trích xuất",...) rồi mới được thực hiện chạy các lệnh nén hay trích xuất ở Bước 2.
 - [ ] **Bước 2: Nén các tệp PDF đầu vào cần xử lý**
   - Chạy lệnh nén để chuyển đổi các tệp PDF cần xử lý sang thư mục tạm:
-    - Nếu xử lý tất cả các tệp đầu vào:
-      ```bash
-      venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all
-      ```
-    - Nếu người dùng chỉ yêu cầu xử lý (các) tệp cụ thể (ví dụ: `file1.pdf` và `file2.pdf`):
+    - Nếu xử lý các tệp trong `data/pdf/PDF/`:
+      - Nếu xử lý tất cả các tệp đầu vào:
+        ```bash
+        venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all
+        ```
+      - Nếu người dùng chỉ yêu cầu xử lý (các) tệp cụ thể:
+        ```bash
+        venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all --files "file1.pdf,file2.pdf"
+        ```
+    - Nếu xử lý các tệp trong `data/pdf/Fixbug/`:
+      - Nếu xử lý tất cả các tệp đầu vào:
+        ```bash
+        venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all --input_dir data/pdf/Fixbug
+        ```
+      - Nếu người dùng chỉ yêu cầu xử lý (các) tệp cụ thể:
+        ```bash
+        venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all --input_dir data/pdf/Fixbug --files "file1.pdf,file2.pdf"
+        ```
+- [ ] **Bước 3: Đọc và Trích xuất hàng loạt (Batch Extraction)**
+  - Liệt kê các tệp trong `data/temp_compress/` (chỉ xử lý các tệp tương ứng với yêu cầu).
+  - Với mỗi tệp PDF tạm thời cần xử lý:
+    - Sử dụng `view_file` để đọc nội dung của tệp.
+    - Phân loại tài liệu theo mẫu từ `invoice1` đến `invoice13`.
+    - Trích xuất dữ liệu thô (raw JSON) tuân thủ chính xác theo schema của mẫu hóa đơn đó.
+  - Gộp tất cả dữ liệu trích xuất thô vào một tệp cấu trúc JSON duy nhất tại `data/batch_raw.json` theo định dạng sau:
+    ```json
+    {
+      "Tên_file_gốc_1.pdf": { <Dữ liệu JSON thô của file 1> },
+      "Tên_file_gốc_2.pdf": { <Dữ liệu JSON thô của file 2> }
+    }
+    ```
+- [ ] **Bước 4: Chạy Đối chiếu DB hàng loạt và Dọn dẹp**
+  - Chạy lệnh đối chiếu DB tự động cho tất cả dữ liệu thô trong `data/batch_raw.json`. Lệnh này sẽ tự động lưu các file JSON đã giải quyết mã vào `data/pdf/json/`, đồng thời tự động xóa thư mục file tạm:
+    ```bash
+    venv/Scripts/python.exe scripts/run_pipeline.py --action resolve_batch --json_file data/batch_raw.json
+    ```  - Nếu người dùng chỉ yêu cầu xử lý (các) tệp cụ thể (ví dụ: `file1.pdf` và `file2.pdf`):
       ```bash
       venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all --files "file1.pdf,file2.pdf"
       ```
