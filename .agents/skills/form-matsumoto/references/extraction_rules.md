@@ -208,7 +208,7 @@ QUY TẮC ƯU TIÊN TUYỆT ĐỐI (ABSOLUTE PRIORITY RULE)
 TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)
 ============================================================
 ■ 商品コード
-- Nếu `product_type` của hàng là "運賃", thì `商品コード` sẽ là "0000000000000000001".
+- Hàng cuối cùng trong bảng (sản phẩm cuối cùng, thường là 送料/vận chuyển) hoặc nếu `product_type` của hàng là "運賃", thì `商品コード` mặc định gán là "0000000000000000001".
 - Trong các trường hợp khác, nếu ô "商品コード" trên PDF trống, gán giá trị `null`.
 
 ■ product_type:
