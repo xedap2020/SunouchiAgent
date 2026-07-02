@@ -1,0 +1,38 @@
+{
+  "header": {
+    "受注区分": "本受注",
+    "搬入口": null,
+    "代理店": null,
+    "出荷日": "2026/06/30",
+    "納期": "2026/07/01",
+    "出荷倉庫": "綾瀬倉庫",
+    "オーダーNo": null,
+    "工事名": null,
+    "受注担当者": null,
+    "customer_name1": null,
+    "customer_name2": null,
+    "customer_code": "371500",
+    "supplier_name": "(株)オータニ",
+    "supplier_code": "320790",
+    "supplier_postal_code": "939-0418",
+    "supplier_tel": "0766-53-1001",
+    "agent": "61",
+    "comment": "F"
+  },
+  "tables": {
+    "items": [
+      {
+        "商品コード": "0000000000000410055",
+        "長さ": null,
+        "員数": 300,
+        "オーダーNo": "617628",
+        "工事名": null,
+        "product_title": null,
+        "product_type": "FB-55",
+        "product_size": null,
+        "is_processing": false,
+        "found_by_search": true
+      }
+    ]
+  }
+}

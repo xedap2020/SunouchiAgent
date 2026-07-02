@@ -1,0 +1,40 @@
+{
+  "header": {
+    "受注区分": "本受注",
+    "搬入口": null,
+    "代理店": "000061",
+    "出荷日": "2026/06/30",
+    "納期": "2026/07/01",
+    "出荷倉庫": "綾瀬倉庫",
+    "オーダーNo": "617628",
+    "工事名": null,
+    "受注担当者": "斉藤正人",
+    "customer_name1": "フルサト工業株式会社",
+    "customer_name2": "業務部",
+    "customer_code": "371500",
+    "matsumoto_customer": null,
+    "supplier_name": "(株)オータニ",
+    "supplier_code": "320790",
+    "supplier_postal_code": null,
+    "supplier_tel": null,
+    "shipping_warehouse": "綾瀬倉庫",
+    "agent": "000061",
+    "matsumoto_agent": null,
+    "comment": "F"
+  },
+  "tables": {
+    "items": [
+      {
+        "商品コード": "0000000000000410055",
+        "長さ": null,
+        "員数": "300",
+        "オーダーNo": "617628",
+        "工事名": null,
+        "product_title": null,
+        "product_type": null,
+        "product_size": null,
+        "is_processing": false
+      }
+    ]
+  }
+}

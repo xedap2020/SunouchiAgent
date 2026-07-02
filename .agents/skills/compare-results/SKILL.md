@@ -41,6 +41,7 @@ Tiến hành đối chiếu từng trường dữ liệu trong phần `header` v
    * Sai lệch mã sản phẩm `商品コード` ở các dòng sản phẩm.
    * Sai lệch số lượng `員数` hoặc chiều dài `長さ` của sản phẩm.
    * Thừa hoặc thiếu dòng sản phẩm (lệch số lượng các item).
+   * Sai lệch trường `受注区分` hoặc `出荷倉庫` / `shipping_warehouse`.
 
 ### Bước 3: Phản hồi kết quả cho người dùng
 * Chỉ hiển thị danh sách các lỗi nghiêm trọng thực sự cần sửa (các lỗi thuộc nhóm 4).

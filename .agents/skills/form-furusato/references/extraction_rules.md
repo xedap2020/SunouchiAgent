@@ -68,10 +68,10 @@ QUY TẮC TRÍCH XUẤT PHẦN HEADER
 ============================================================
 
 ■ 受注区分 (Phân loại nhận đơn)
-- Trích xuất từ con dấu màu đỏ tròn hoặc văn bản viết tay ở góc trên bên phải/trên cùng. Nếu thấy con dấu tròn đỏ chứa chữ "ア" và chữ viết tay "本文" bên cạnh, hoặc có dấu "本受注", gán "本受注". Nếu không có, gán null.
+- Trích xuất từ con dấu màu đỏ (tròn hoặc chữ nhật) hoặc văn bản viết tay ở góc trên bên phải/trên cùng. Nếu thấy con dấu đỏ chứa chữ "ア" và chữ viết tay "本文" bên cạnh, hoặc có dấu chứa chữ "本受注" hoặc "本受", gán "本受注". Nếu không có, gán null.
 
 ■ 出荷倉庫 (Kho xuất hàng)
-- Trích xuất từ ký tự viết tay hoặc con dấu tròn màu đỏ ở góc trên bên phải. Nếu thấy con dấu tròn đỏ ghi chữ "ア", gán "綾瀬倉庫". Nếu không tìm thấy, gán null.
+- Trích xuất từ ký tự viết tay hoặc con dấu tròn màu đỏ ở góc trên bên phải. Nếu thấy con dấu tròn đỏ hoặc nét khoanh tròn viết tay ghi chữ "ア" hoặc chữ "サ", gán "綾瀬倉庫". Nếu không tìm thấy, gán null.
 
 ■ shipping_warehouse
 - Đồng bộ với giá trị của "出荷倉庫".
