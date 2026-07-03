@@ -10,3 +10,4 @@ data/temp_onboard/
 .n8n/
 data/admin_chats.json
 data/telegram_conversations.json
+config.py
