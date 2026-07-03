@@ -75,10 +75,12 @@ QUY TẮC TRÍCH XUẤT PHẦN HEADER
 
 ■ 出荷日 (Ngày xuất hàng)
 - Trích xuất từ mục "発送日:"
+- Hoặc chính là chữ viết tay màu đỏ ở ngay bên trên mục 納入口 có dạng MM/DD lúc này YYYY chính là YYYY của 納期
+- Nếu có chữ viết tay màu đỏ dạng "A/B出 C着" (ví dụ: "6/12出 15着") thì ngày xuất hàng (出荷日) sẽ là ngày A/B (2026/A/B)
 - Định dạng nghiêm ngặt: YYYY/MM/DD
 
 ■ 納期 (Ngày giao hàng)
-- Trích xuất từ mục "納入日" 
+- Trích xuất từ mục "納入日" hoặc "納入口"
 - Ở mục chỉ ghi dạng A月B日 (A, B là 1 số nguyên) bạn phải tự chuẩn hóa về định dạng đúng năm sẽ là năm hiện tại (năm nay là năm 2026)
 - Định dạng nghiêm ngặt: YYYY/MM/DD 
 
@@ -107,9 +109,10 @@ TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)  (đây là ph�
 
 [Nguồn dữ liệu]: Cột "コラム種類" (để xác định loại) và cột "コラムサイズ" (để lấy thông số số học) trên cùng một hàng (hàng nào phải đi với đúng số của hàng đó).
 [Quy trình xử lý và Logic xác định]:
-BƯỚC 1: Xác định loại Thép (BCP, BCR, hoặc STKR) dựa vào cột "コラム種類":
+BƯỚC 1: Xác định loại Thép (BCP, BCR, hoặc STKR hoặc 385n) dựa vào cột "コラム種類":
 - Nếu cột chỉ ghi duy nhất 1 chữ (BCR hoặc BCP hoặc STKR): Lấy luôn chữ đó.
 - Nếu cột ghi chuỗi chứa cả 3 loại (BCP・BCR・STKR・テーパー・レジューサー): Bắt buộc phải quan sát hình ảnh để tìm ký tự được KHOANH TRÒN . (Ví dụ: Nếu BCP được khoanh thì coi như loại Thép là BCP. Nếu BCR được khoanh thì coi như loại Thép là BCR).
+- Nếu cột ghi G385 hoặc N385 thì là 385n
 BƯỚC 2: Trích xuất và xử lý chuỗi số từ cột "コラムサイズ":
 Nhìn vào giá trị số của đúng hàng đó tại cột "コラムサイズ" và áp dụng nghiêm ngặt quy tắc cắt chuỗi sau:
 - Trường hợp thông thường (Dạng: 3 chữ số x 3 chữ số x 2 chữ số. Ví dụ: 850×850×32): Lấy 2 số đầu tiên (85) và 2 số cuối cùng (32) để tạo thành chuỗi 4 chữ số (8532).
@@ -117,6 +120,7 @@ Nhìn vào giá trị số của đúng hàng đó tại cột "コラムサイ�
 BƯỚC 3: Công thức thiết lập giá trị cuối cùng cho `product_type`:
 - Nếu loại Thép xác định ở Bước 1 là BCP: Thêm chữ "P" vào trước chuỗi số tìm được ở Bước 2. (Ví dụ: P8532, P0028).
 - Nếu loại Thép xác định ở Bước 1 là BCR hoặc STKR: Giữ nguyên chuỗi số tìm được ở Bước 2, KHÔNG thêm chữ P. (Ví dụ: 8532, 0028).
+- Nếu loại thép xác định ở Bước 1 là 385n: Thì thêm chữ "G" vào trước chuối số tìm được ở Bước 2 (Ví dụ: 8532 thì sẽ là G8532, 0028 thì sẽ là G0028)
 [CÁC ĐIỀU CẤM VÀ ĐIỀU KIỆN KIỂM TRA BẮT BUỘC TRƯỚC KHI TRẢ KẾT QUẢ]:
 1. KIỂM TRA ĐỘ DÀI PHẦN SỐ: Phần số trong `product_type` bắt buộc ĐÚNG 4 chữ số (Không được thừa hay thiếu số 0. Ví dụ: 3009 là ĐÚNG, 30009 là SAI).
 2. CẤM NHẦM LẪN HÀNG: Tuyệt đối không được lấy nhầm thông số của hàng này râu ông nọ cắm cằm bà kia sang hàng khác.
@@ -160,6 +164,7 @@ BƯỚC 3: Công thức thiết lập giá trị cuối cùng cho `product_type`
           -> category_small = Ký tự được khoanh tròn đó (Ví dụ: thấy BCP được khoanh -> "BCP").
        3. [FALLBACK] Nếu không có khoanh tròn nào:
           -> Đọc văn bản thuần. Nếu chỉ có 1 loại -> Lấy loại đó. Nếu có nhiều loại -> Dùng logic mặc định (ưu tiên BCP nếu không rõ).
+    - Nếu như trên cộ ghi G385 hoặc N385 thì category_small là n385 
 
 ■ オーダーNo (Mã đơn hàng)
 - Trích xuất từ mục "発注No."

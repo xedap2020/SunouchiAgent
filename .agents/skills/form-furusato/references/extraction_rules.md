@@ -248,11 +248,10 @@ Quy tắc định dạng: Bắt buộc viết hoa chữ X, không có khoảng t
 - Nếu product_type mà là CR thì product_size là 9X25X  (Lưu ý : product_size lúc này sẽ chỉ là 9X25X không X thêm số gì vào sau)
 
 ■ 受注区分 (Phân loại nhận đơn)
-- Trích xuất từ con dấu màu đỏ (tròn hoặc chữ nhật) hoặc văn bản viết tay ở góc trên bên phải/trên cùng. Nếu thấy con dấu đỏ chứa chữ "ア" và chữ viết tay "本文" bên cạnh, hoặc có dấu chứa chữ "本受注" hoặc "本受", gán "本受注". Nếu không có, gán null.
-
+- Trích xuất từ con dấu màu đỏ tròn hoặc văn bản viết tay ở góc trên bên phải/trên cùng. Nếu thấy con dấu tròn đỏ hoặc chữ viết tay màu đỏ chứa chữ "ア" hoặc "サ" và có chữ viết tay "本文", "本" hoặc "<本>" bên cạnh, hoặc có con dấu/chữ viết tay "本受注", gán "本受注". Nếu có chữ viết tay "仮" hoặc con dấu "仮" (không đi kèm chữ "枠" như "仮枠"), gán "仮受注". Nếu không có, gán null.
 
 ■ 出荷倉庫 (Kho xuất hàng)
-- Trích xuất từ ký tự viết tay hoặc con dấu tròn màu đỏ ở góc trên bên phải. Nếu thấy con dấu tròn đỏ hoặc nét khoanh tròn viết tay ghi chữ "ア" hoặc chữ "サ", gán "綾瀬倉庫". Nếu không tìm thấy, gán null.
+- Trích xuất từ ký tự viết tay hoặc con dấu tròn màu đỏ ở góc trên bên phải. Nếu thấy con dấu tròn đỏ ghi chữ "ア", gán "綾瀬倉庫". Nếu không tìm thấy, gán null.
 
 ■ shipping_warehouse
 - Đồng bộ với giá trị của "出荷倉庫".

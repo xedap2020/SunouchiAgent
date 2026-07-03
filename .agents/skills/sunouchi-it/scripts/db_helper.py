@@ -474,7 +474,11 @@ def resolve_codes(data):
                 has_prod_inputs = any(k in item for k in ["product_title", "product_type", "product_size", "col_maker", "mat_size", "category_small"])
                 
                 found_prod_code = None
-                if product_title or product_type or product_size or col_maker or mat_size or category_small:
+                prev_code = item.get("商品コード")
+                if product_type == "運賃" or (prev_code and str(prev_code).strip() in ("0000000000000000001", "000000000000000001")):
+                    item["商品コード"] = prev_code if prev_code else "0000000000000000001"
+                    item["found_by_search"] = True
+                elif product_title or product_type or product_size or col_maker or mat_size or category_small:
                     found_prod_code = search_product_code(
                         cursor,
                         title=product_title,

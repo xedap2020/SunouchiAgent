@@ -206,8 +206,9 @@ TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)  (đây là ph�
 - Nếu category_small mà là BCP thì phải thêm chữ P vào đằng trước 
 - Ví dụ: カドピタ9X25平BCP 550X22 thì category_small là BCP thì product_type là P5522 	
 + Trường hợp 4:  
-- Trường hợp mà ở hàng sản phầm găp chữ JBCR hoặc JFE知多 hoặc col_maker mà là JFE-W thì bạn cần phải thêm chữ J vào đằng sau product_type [QUY TẮC QUAN TRỌNG KHÔNG ĐƯỢC BỎ QUA ]
+- Trường hợp mà ở hàng sản phầm găp chữ JBCR hoặc (xuất hiện đồng thời cả hai chữ JFE và 知多) hoặc col_maker mà là JFE-W thì bạn cần phải thêm chữ J vào đằng sau product_type [QUY TẮC QUAN TRỌNG KHÔNG ĐƯỢC BỎ QUA ]
 - Ví dụ: カドピタGJ-R 9X50 4X18C 500X 22 JFE知多 thì product_type là 5022J 
+- Lưu ý cái chữ 知多 có thể được viết tay bằng mục đỏ nên bạn phải rất để ý đôi khi họ sẽ viết là JFE BCR/SN490B 知多 thì đây cũng là JFE-W 
 
 ■ product_size: chính là chữ đứng sau カドピタ hoặc GJ-R hoặc GJ, product_size sẽ có dạng AXBC (A, B, C đều là 1 số nguyên)
 - Ví dụ: カドピタ9X25平BCR 250X 12 thì product_size chính là 9X25 
@@ -229,7 +230,7 @@ TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)  (đây là ph�
 - Nếu như mà gặp chữ 佐々木, ｻｻｷ thì col_maker là ｻｻｷ 
 - Nếu như mà gặp chữ 佐野, ｾｲｹｲ thì col_maker là ｾｲｹｲ
 - Nếu như mà gặp các chữ nằm trong các chữ mà mình đã chỉ định ở trên thì mình phải chuyển về định dạng giống với mấy chữ ở trên (ví du: ナカジマ -> ﾅｶｼﾞﾏ)
-- Cái trường này sẽ có một số trường hợp là họ sẽ sửa hoặc bổ xung bằng mực đỏ nên bạn cũng phải để ý rất kỹ (ví dụ: mực in của file có thể là JFE nhưng nó hoàn toàn có thể thêm -w bằng mực đỏ vào để tạo thành JFE-W ), ,ếu mà có một cái mũi tên được viết bằng mực đỏ kẻ từ trên xuống thì có nghĩa là tất cả các sản phẩm bị kẻ cũng sẽ bị ảnh hưởng theo 
+- Cái trường này sẽ có một số trường hợp là họ sẽ sửa hoặc bổ xung bằng mực đỏ nên bạn cũng phải để ý rất kỹ (ví dụ: mực in của file có thể là JFE nhưng nó hoàn toàn có thể thêm -w hoặc chữ 知多 bằng mực đỏ vào để tạo thành JFE-W ), nếu mà có một cái mũi tên được viết bằng mực đỏ kẻ từ trên xuống thì có nghĩa là tất cả các sản phẩm bị kẻ cũng sẽ bị ảnh hưởng theo 
 
 ■ mat_size: trường này sẽ nằm ngày đằng sau product_size và sẽ thường là 1 trong các giá trị sau đây: 3C, 5C, 18C, FB 
 - Nếu trong trường hợp trong cái cell sản phầm đấy không có 3C, 5C, 18C thì mat_size chính là FB (Ví dụ: カドピタ9X25FBCR 300X 9 thì mat_size là FB)

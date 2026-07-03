@@ -29,7 +29,6 @@ OUTPUT SHAPE (CẤU TRÚC JSON ĐẦU RA BẮT BUỘC)
                 "product_title": null,
                 "product_type": null,
                 "product_size": null,
-                "category_small": null,
                 "is_processing": null
             }
         ]
@@ -41,7 +40,7 @@ RULES (QUY TẮC TRÍCH XUẤT)
 ============================================================
 - CHỈ trả về định dạng JSON hợp lệ. Không kèm văn bản ngoài (markdown). Không thêm chú thích.
 - Kết quả đầu ra phải khớp chính xác cấu trúc: {"header": {...}, "tables": {"items": [...]}}
-- Sản phẩm thì bạn phải đọc của tất cả các cáitrang không phải là đọc của 1 trang 
+- Sản phẩm thì bạn phải đọc của tất cả các cái trang không phải là đọc của 1 trang 
 
 ============================================================
 KHÓA SCHEMA NGHIÊM NGẶT (STRICT SCHEMA LOCK)
@@ -120,7 +119,7 @@ NHẬN DIỆN DÒNG SẢN PHẨM (ITEM ROW DETECTION)
 - Một hàng trên PDF = Một đối tượng JSON.
 
 ============================================================
-TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)  (đây là phần quan trọng nhất trong file pdf file nào cũng sẽ có ít nhất 1 sản phẩm nên bạ phải phân tích thật kỹ không đọcw bỏ qua cái này 
+TRÍCH XUẤT THÔNG TIN SẢN PHẨM (PRODUCT META EXTRACTION)  (đây là phần quan trọng nhất trong file pdf file nào cũng sẽ có ít nhất 1 sản phẩm nên bạ phải phân tích thật kỹ không đọc bỏ qua cái này 
 ============================================================
 ■ product_title: trường này thì để null lúc nào cũng là null 
 ■ product_type: trường này thì lấy data ở cái cột 名称

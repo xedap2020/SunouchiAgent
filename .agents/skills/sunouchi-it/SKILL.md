@@ -15,7 +15,7 @@ Kỹ năng này đăng ký các công cụ và hướng dẫn tùy chỉnh cho q
 Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư mục `scripts/`. Khi chạy các kịch bản này, hãy đảm bảo môi trường ảo Python của không gian làm việc đã được kích hoạt hoặc sử dụng `venv/Scripts/python.exe`.
 
 - **`scripts/run_pipeline.py`**
-  - **Mục đích**: Tự động hóa và tối ưu hóa quy trình phân loại & trích xuất PDF hàng loạt, giúp nén và đối chiếu cơ sở dữ liệu cho nhiều tệp cùng lúc để giảm số lượt tương tác của Agent.
+  - **Mục đích**: Tự động hóa và tối ưu hóa quy trình phân loại & trích xuất PDF hàng loạt, giúp nén, cập nhật rules từ database và đối chiếu cơ sở dữ liệu cho nhiều tệp cùng lúc để giảm số lượt tương tác của Agent.
   - **Sử dụng**:
     - Nén tất cả hoặc các PDF đầu vào được chọn:
       ```bash
@@ -27,6 +27,13 @@ Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư m
     - Giải quyết đối chiếu mã DB hàng loạt:
       ```bash
       venv/Scripts/python.exe scripts/run_pipeline.py --action resolve_batch --json_file <đường_dẫn_batch_json>
+      ```
+    - Cập nhật luật trích xuất từ database (chỉ đọc):
+      ```bash
+      # Cập nhật toàn bộ các tệp extraction_rules.md cục bộ
+      venv/Scripts/python.exe scripts/run_pipeline.py --action update_rules --mode all
+      # Cập nhật một đơn cụ thể (ví dụ: invoice4 cho Matsumoto)
+      venv/Scripts/python.exe scripts/run_pipeline.py --action update_rules --mode invoice4
       ```
 - **`scripts/db_helper.py`**
   - **Mục đích**: Kết nối với cơ sở dữ liệu MySQL cục bộ để tra cứu và khớp mã (sản phẩm, khách hàng, nhà cung cấp) cho dữ liệu JSON hóa đơn đã trích xuất.
@@ -64,6 +71,7 @@ Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư m
     venv/Scripts/python.exe tools/prompt_generator/onboard_prep.py
     ```
 ---
+
 
 ## 1. Bộ ph�- [ ] **Bước 1: Xác định và hiển thị các tệp đầu vào**
   - Thư mục đầu vào chứa các tệp PDF gốc: `data/pdf/PDF/` hoặc thư mục sửa lỗi `data/pdf/Fixbug/`.
@@ -117,41 +125,64 @@ Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư m
 - [ ] **Bước 3: Đọc và Trích xuất hàng loạt (Batch Extraction)**
   - Liệt kê các tệp trong `data/temp_compress/` (chỉ xử lý các tệp tương ứng với yêu cầu).
   - Với mỗi tệp PDF tạm thời cần xử lý:
-    - Sử dụng `view_file` để đọc nội dung của tệp.
-    - Phân loại tài liệu theo mẫu từ `invoice1` đến `invoice13`.
-    - Trích xuất dữ liệu thô (raw JSON) tuân thủ chính xác theo schema của mẫu hóa đơn đó.
-  - Gộp tất cả dữ liệu trích xuất thô vào một tệp cấu trúc JSON duy nhất tại `data/batch_raw.json` theo định dạng sau:
-    ```json
-    {
-      "Tên_file_gốc_1.pdf": { <Dữ liệu JSON thô của file 1> },
-      "Tên_file_gốc_2.pdf": { <Dữ liệu JSON thô của file 2> }
-    }
-    ```
-- [ ] **Bước 4: Chạy Đối chiếu DB hàng loạt và Dọn dẹp**
-  - Chạy lệnh đối chiếu DB tự động cho tất cả dữ liệu thô trong `data/batch_raw.json`. Lệnh này sẽ tự động lưu các file JSON đã giải quyết mã vào `data/pdf/json/`, đồng thời tự động xóa thư mục file tạm:
-    ```bash
-    venv/Scripts/python.exe scripts/run_pipeline.py --action resolve_batch --json_file data/batch_raw.json
-    ```  - Nếu người dùng chỉ yêu cầu xử lý (các) tệp cụ thể (ví dụ: `file1.pdf` và `file2.pdf`):
+    - **Chạy YOLO để nhận diện trước**: Chạy lệnh sau để lấy kết quả phân tích kho và loại đơn từ YOLO:
       ```bash
-      venv/Scripts/python.exe scripts/run_pipeline.py --action compress_all --files "file1.pdf,file2.pdf"
+      venv/Scripts/python.exe -c "import sys; sys.path.append(r'.agents/skills/sunouchi-it/scripts'); from yolo_worker import run_yolo_detection_sync; import json; print(json.dumps(run_yolo_detection_sync(r'data/pdf/PDF/<tên_tệp_pdf>'), ensure_ascii=False))"
       ```
-- [ ] **Bước 3: Đọc và Trích xuất hàng loạt (Batch Extraction)**
-  - Liệt kê các tệp trong `data/temp_compress/` (chỉ xử lý các tệp tương ứng với yêu cầu).
-  - Với mỗi tệp PDF tạm thời cần xử lý:
-    - Sử dụng `view_file` để đọc nội dung của tệp.
+    - Sử dụng `view_file` để đọc hình ảnh của tệp.
     - Phân loại tài liệu theo mẫu từ `invoice1` đến `invoice13`.
     - Trích xuất dữ liệu thô (raw JSON) tuân thủ chính xác theo schema của mẫu hóa đơn đó.
+    - **Kết hợp kết quả YOLO và Metadata**:
+      - Gán giá trị trích xuất từ Text bởi Gemini (OCR tĩnh) vào các trường: `受注区分` và `出荷倉庫`.
+      - Bổ sung các trường YOLO thô vào phần `header`:
+        - `"category_file_yolo"`: loại đơn từ YOLO (ví dụ `"本受注"`).
+        - `"warehouse_yolo"`: tên kho từ YOLO (ví dụ `"本社倉庫"`).
+        - `"category_code"`: mã loại đơn từ YOLO.
+        - `"category_confidence"`: độ tin cậy của YOLO đối với loại đơn (kiểu số thực).
+      - Thực hiện đối chiếu và gán giá trị quyết định cuối cùng vào các trường để tự động nhập (autotype):
+        - `"category_file"`: Ưu tiên lấy giá trị `受注区分` (nếu không null), ngược lại lấy `category_file_yolo`.
+        - `"warehouse"`: Ưu tiên lấy giá trị `出荷倉庫` (nếu không null), ngược lại lấy `warehouse_yolo`.
+        - `"shipping_warehouse"`: Đồng bộ với giá trị của `"warehouse"`.
+      - Thêm các trường metadata ở root level: `"_extract_mode"` và `"_original_filename"`.
   - Gộp tất cả dữ liệu trích xuất thô vào một tệp cấu trúc JSON duy nhất tại `data/batch_raw.json` theo định dạng sau:
     ```json
     {
-      "Tên_file_gốc_1.pdf": { <Dữ liệu JSON thô của file 1> },
-      "Tên_file_gốc_2.pdf": { <Dữ liệu JSON thô của file 2> }
+      "Tên_file_gốc_1.pdf": {
+        "header": {
+          "受注区分": null,
+          "出荷倉庫": "綾瀬倉庫",
+          "customer_code": "371500",
+          "category_file_yolo": "本受注",
+          "warehouse_yolo": "本社倉庫",
+          "category_file": "本受注",
+          "warehouse": "綾瀬倉庫",
+          "shipping_warehouse": "綾瀬倉庫",
+          "category_code": "loai_b",
+          "category_confidence": 73.9,
+          // Các trường trích xuất thông thường khác...
+          "comment": "F"
+        },
+        "tables": {
+          "items": [
+            {
+              "商品コード": null,
+              "長さ": null,
+              "員数": 4,
+              "product_type": "AP",
+              "product_size": "12X38X50",
+              "is_processing": false
+            }
+          ]
+        },
+        "_extract_mode": "invoice1",
+        "_original_filename": "Tên_file_gốc_1.pdf"
+      }
     }
     ```
 - [ ] **Bước 4: Chạy Đối chiếu DB hàng loạt và Dọn dẹp**
   - Chạy lệnh đối chiếu DB tự động cho tất cả dữ liệu thô trong `data/batch_raw.json`. Lệnh này sẽ tự động lưu các file JSON đã giải quyết mã vào `data/pdf/json/`, đồng thời tự động xóa thư mục file tạm:
     ```bash
-    venv/Scripts/python.exe scripts/run_pipeline.py --action resolve_batch --json_file data/batch_raw.json
+    venv/Scripts/python.exe .agents/skills/sunouchi-it/scripts/run_pipeline.py --action resolve_batch --json_file data/batch_raw.json
     ```
 - [ ] **Bước 5: Hiển thị kết quả tóm tắt cho người dùng**
   - **BẮT BUỘC**: Phải phản hồi theo đúng cấu trúc mẫu cố định sau đây để đảm bảo tính nhất quán (không tự ý thêm bớt từ ngữ ngoài mẫu này):
@@ -255,11 +286,26 @@ Khi nhận lệnh đóng gói Skill mới từ người dùng:
 
 ---
 
+## 4. Xóa tệp đơn hàng (PDF, JSON và Ảnh liên quan)
+
+Khi người dùng yêu cầu xóa một đơn hàng/file cụ thể (ví dụ: *"xóa file フルサト　J172983　S5　G..pdf"* hoặc *"xóa đơn hàng J172983"*):
+
+### Hướng dẫn thực thi:
+- Chạy lệnh sau để thực hiện xóa toàn bộ các tệp PDF gốc, PDF nén, JSON kết quả và thư mục hình ảnh của đơn hàng đó:
+  ```bash
+  venv/Scripts/python.exe .agents/skills/sunouchi-it/scripts/run_pipeline.py --action delete_slip --files "<tên_file_hoặc_mã_đơn>"
+  ```
+  *(Ví dụ: `venv/Scripts/python.exe .agents/skills/sunouchi-it/scripts/run_pipeline.py --action delete_slip --files "フルサト　J172983　S5　G..pdf"`)*
+
+---
+
 ## Lưu ý & Trường hợp biên
 
 - **Tên tệp quyết định `customer_code`**: Trước khi trích xuất dữ liệu, bạn **BẮT BUỘC** phải kiểm tra tên tệp PDF và đối chiếu để gán mã `customer_code` phù hợp theo bảng quy tắc tập trung tại [AGENTS.md](file:///e:/SunouchiAgent/.agents/AGENTS.md). **KHÔNG** tự ý ghi đè bằng logic khác.
 
 
 - **Không can thiệp vào quá trình Autotype**: ERP Auto-Typer thực hiện tự động hóa GUI cấp hệ điều hành bằng cách nhấp chuột và nhập bàn phím. Khuyên người dùng tránh xa bàn phím/chuột và không chuyển đổi cửa sổ đang hoạt động trong khi quy trình đang chạy.
+- **TUYỆT ĐỐI KHÔNG CHỈNH SỬA DATABASE**: Trong bất kỳ hành động nào, bất kỳ skill nào, bạn **TUYỆT ĐỐI KHÔNG** được phép thực hiện các thao tác ghi, cập nhật, xóa hoặc chỉnh sửa dữ liệu trực tiếp trong database MySQL cục bộ (không chạy các câu lệnh `UPDATE`, `INSERT`, `DELETE`, `ALTER`, `DROP`...). Bạn chỉ được phép xem dữ liệu (`SELECT`) để tìm kiếm và đối chiếu thông tin.
 - **Kết nối cơ sở dữ liệu MySQL**: Quy trình tra cứu đối chiếu mã (`db_helper.py`) kết nối trực tiếp với thực thể MySQL cục bộ. Nếu cơ sở dữ liệu ngoại tuyến hoặc không được cấu hình chính xác trong các biến môi trường, bước tra cứu mã sẽ thất bại.
+
 - **Thực thi không tương tác**: Cả hai kịch bản xử lý PDF và nhập liệu ERP phải chạy trong môi trường shell không tương tác. Không mong đợi bất kỳ lời nhắc tương tác nào hoặc yêu cầu nhập thông tin trong quá trình thực thi.
