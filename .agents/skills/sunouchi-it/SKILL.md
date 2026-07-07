@@ -125,23 +125,19 @@ Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư m
 - [ ] **Bước 3: Đọc và Trích xuất hàng loạt (Batch Extraction)**
   - Liệt kê các tệp trong `data/temp_compress/` (chỉ xử lý các tệp tương ứng với yêu cầu).
   - Với mỗi tệp PDF tạm thời cần xử lý:
-    - **Chạy YOLO để nhận diện trước**: Chạy lệnh sau để lấy kết quả phân tích kho và loại đơn từ YOLO:
-      ```bash
-      venv/Scripts/python.exe -c "import sys; sys.path.append(r'.agents/skills/sunouchi-it/scripts'); from yolo_worker import run_yolo_detection_sync; import json; print(json.dumps(run_yolo_detection_sync(r'data/pdf/PDF/<tên_tệp_pdf>'), ensure_ascii=False))"
-      ```
     - Sử dụng `view_file` để đọc hình ảnh của tệp.
     - Phân loại tài liệu theo mẫu từ `invoice1` đến `invoice13`.
     - Trích xuất dữ liệu thô (raw JSON) tuân thủ chính xác theo schema của mẫu hóa đơn đó.
-    - **Kết hợp kết quả YOLO và Metadata**:
+    - **Kết hợp Metadata và điền các trường hệ thống**:
       - Gán giá trị trích xuất từ Text bởi Gemini (OCR tĩnh) vào các trường: `受注区分` và `出荷倉庫`.
-      - Bổ sung các trường YOLO thô vào phần `header`:
-        - `"category_file_yolo"`: loại đơn từ YOLO (ví dụ `"本受注"`).
-        - `"warehouse_yolo"`: tên kho từ YOLO (ví dụ `"本社倉庫"`).
-        - `"category_code"`: mã loại đơn từ YOLO.
-        - `"category_confidence"`: độ tin cậy của YOLO đối với loại đơn (kiểu số thực).
-      - Thực hiện đối chiếu và gán giá trị quyết định cuối cùng vào các trường để tự động nhập (autotype):
-        - `"category_file"`: Ưu tiên lấy giá trị `受注区分` (nếu không null), ngược lại lấy `category_file_yolo`.
-        - `"warehouse"`: Ưu tiên lấy giá trị `出荷倉庫` (nếu không null), ngược lại lấy `warehouse_yolo`.
+      - Điền các trường YOLO cũ bằng `null` hoặc mặc định:
+        - `"category_file_yolo"`: gán `null`.
+        - `"warehouse_yolo"`: gán `null`.
+        - `"category_code"`: gán `null`.
+        - `"category_confidence"`: gán `0` (kiểu số thực).
+      - Thiết lập các trường quyết định cuối cùng từ OCR:
+        - `"category_file"`: Lấy trực tiếp từ giá trị `受注区分` (nếu không null), ngược lại gán `null`.
+        - `"warehouse"`: Lấy trực tiếp từ giá trị `出荷倉庫` (nếu không null), ngược lại gán `null`.
         - `"shipping_warehouse"`: Đồng bộ với giá trị của `"warehouse"`.
       - Thêm các trường metadata ở root level: `"_extract_mode"` và `"_original_filename"`.
   - Gộp tất cả dữ liệu trích xuất thô vào một tệp cấu trúc JSON duy nhất tại `data/batch_raw.json` theo định dạng sau:
@@ -152,13 +148,13 @@ Kỹ năng này cung cấp các kịch bản Python sau đây nằm trong thư m
           "受注区分": null,
           "出荷倉庫": "綾瀬倉庫",
           "customer_code": "371500",
-          "category_file_yolo": "本受注",
-          "warehouse_yolo": "本社倉庫",
-          "category_file": "本受注",
+          "category_file_yolo": null,
+          "warehouse_yolo": null,
+          "category_file": null,
           "warehouse": "綾瀬倉庫",
           "shipping_warehouse": "綾瀬倉庫",
-          "category_code": "loai_b",
-          "category_confidence": 73.9,
+          "category_code": null,
+          "category_confidence": 0,
           // Các trường trích xuất thông thường khác...
           "comment": "F"
         },

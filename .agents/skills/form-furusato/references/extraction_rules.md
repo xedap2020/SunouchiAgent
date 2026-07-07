@@ -205,7 +205,7 @@ Chuẩn hóa ưu tiên cao:
 - Dòng CR-F: Nếu mô tả chứa cả "CR" và "F", nếu gặp CRF thì product_type là CR-F (lưu ý nếu chỉ gặp chữ CR thì product_type là FB) 
 - Nếu gặp chữ CR thì product_type là FB và product_size sẽ có 2 trường hợp xảy ra 
 	+ nếu ký tự đằng sau chữ L mà nhỏ hơn 80 thì product_size sẽ là là 9X25X hoặc 9X32X tùy thuộc vào hàng sản phẩm đấy hiển thị 9X25 hay 9X32  (Lưu ý : product_size lúc này sẽ chỉ là 9X25X  hoặc 9X32X  không X thêm số gì vào sau)
-	+ nếu ký tự đằng sau chữ L mà lớn hơn 80 thì product_size là 9X25Xsố đằng sau chữ L hoặc 9X32Xsố đằng sau chữ L tùy thuộc vào hàng sản phẩm đấy hiển thị 9X25 hay 9X32 
+	+ nếu ký tự đằng sau chữ L mà lớn hơn hoặc bằng 80 thì product_size là 9X25Xsố đằng sau chữ L hoặc 9X32Xsố đằng sau chữ L tùy thuộc vào hàng sản phẩm đấy hiển thị 9X25 hay 9X32 
 	+ Trường hợp đặc biệt nếu gặp chữ CR và 15.5R  hoặc CR và R15.5 và product_size là 9X25 thì product_type là CR-F
 - Dòng AP: Nếu mã là "AP" + số (ví dụ: AP36, AP48) -> CHỈ lấy "AP" làm product_type.
 - Dòng CP: Nếu mã là "CP" + số nhưng thiếu dấu gạch ngang (ví dụ: CP40) -> Phải chuyển thành "CP-40".
@@ -248,7 +248,7 @@ Quy tắc định dạng: Bắt buộc viết hoa chữ X, không có khoảng t
 - Nếu product_type mà là CR thì product_size là 9X25X  (Lưu ý : product_size lúc này sẽ chỉ là 9X25X không X thêm số gì vào sau)
 
 ■ 受注区分 (Phân loại nhận đơn)
-- Trích xuất từ con dấu màu đỏ tròn hoặc văn bản viết tay ở góc trên bên phải/trên cùng. Nếu thấy con dấu tròn đỏ hoặc chữ viết tay màu đỏ chứa chữ "ア" hoặc "サ" và có chữ viết tay "本文", "本" hoặc "<本>" bên cạnh, hoặc có con dấu/chữ viết tay "本受注", gán "本受注". Nếu có chữ viết tay "仮" hoặc con dấu "仮" (không đi kèm chữ "枠" như "仮枠"), gán "仮受注". Nếu không có, gán null.
+- Trích xuất từ con dấu màu đỏ tròn hoặc văn bản viết tay ở góc trên bên phải/trên cùng. Nếu thấy con dấu tròn đỏ chứa chữ "ア" và chữ viết tay "本文" bên cạnh, hoặc có dấu "本受注", gán "本受注". Nếu không có, gán null.
 
 ■ 出荷倉庫 (Kho xuất hàng)
 - Trích xuất từ ký tự viết tay hoặc con dấu tròn màu đỏ ở góc trên bên phải. Nếu thấy con dấu tròn đỏ ghi chữ "ア", gán "綾瀬倉庫". Nếu không tìm thấy, gán null.
@@ -284,10 +284,9 @@ Quy tắc định dạng: Bắt buộc viết hoa chữ X, không có khoảng t
 	+ Nếu sau "工事名:" không có nội dung hợp lệ → trả về null
 	+ Nếu không xác định được rõ ràng giá trị từ OCR → trả về null
 	- Chuẩn hóa:
-	+ Nếu giá trị chứa chữ cái Latin hoặc chữ số → chuyển toàn bộ sang dạng full-width (全角)
+	+ Luôn chuyển TOÀN BỘ chữ cái Latin, chữ số và các ký tự đặc biệt sang dạng half-width (半角) để đồng nhất với ERP.
 	- Làm sạch dữ liệu:
-	+ Nếu trong giá trị có chứa "裏当金" → loại bỏ cụm "裏当金" khỏi kết quả
-	+ Nếu trong giá trị có chứa "ウラ当" → loại bỏ cụm "ウラ当" khỏi kết quả
+	+ TUYỆT ĐỐI KHÔNG loại bỏ chữ "ｳﾗ当" hoặc "裏当金" khỏi kết quả (giữ nguyên nếu có).
 	+ Giữ lại các nội dung trong ngoặc () nếu liên quan đến 工事名 (ví dụ: "(事務所棟)")
 	+ Loại bỏ khoảng trắng dư thừa ở đầu/cuối và nối các dòng thành một chuỗi
 	- [LOẠI TRỪ CỤ THỂ]
@@ -307,19 +306,20 @@ Quy tắc định dạng: Bắt buộc viết hoa chữ X, không có khoảng t
 	  (dạng: tên công ty + 様 + mã số, ví dụ: "(有)越川鋼業物産 様分 (00329114)")
 	  vì đây là thông tin người nhận hàng, KHÔNG phải 工事名.
 	- Nếu OCR không tìm thấy giá trị rõ ràng cho 工事名 → bắt buộc trả về null.
+	- XỬ LÝ TRƯỜNG 工事名 Ở PHẦN BODY (BẢNG ITEMS):
+	+ Giá trị trường 工事名 ở mỗi dòng sản phẩm = [工事名 trích xuất từ header của trang đó] + [Khoảng trắng] + [Ký hiệu 合番 trích xuất từ dòng phụ dưới tên sản phẩm (nếu có trên PDF, ví dụ: '合番: U155A' thì lấy 'U155A')].
+	+ Ví dụ: Nếu 工事名 ở header là "第23回1307V-5/29階大梁 (外周) ｳﾗ当<ﾒｯｷ>3" và dòng phụ dưới tên sản phẩm có ghi "合番: U155A" -> 工事名 ở dòng sản phẩm đó là "第23回1307V-5/29階大梁 (外周) ｳﾗ当<ﾒｯｷ>3 U155A".
+	+ Luôn chuyển toàn bộ chữ cái Latin, chữ số và Katakana trong kết quả này sang dạng Half-width (半角).
 	- XỬ LÝ GIỚI HẠN ĐỘ DÀI (RẤT QUAN TRỌNG):
 	+ Sau khi hoàn tất:
 		* Trích xuất
 		* Làm sạch dữ liệu
 		* Chuẩn hóa
 	+ Tính tổng số ký tự của giá trị cuối cùng
-	+ Nếu độ dài ≤ 30 ký tự:
-		* Giữ nguyên toàn bộ (Latin và số ở dạng full-width)
-	+ Nếu độ dài > 30 ký tự:
-		* Chuyển TOÀN BỘ chữ cái Latin và chữ số từ Full-width (全角) → Half-width (半角)
-		* Giữ nguyên các ký tự tiếng Nhật (Kanji, Hiragana, Katakana)
-		* KHÔNG được cắt chuỗi
-		* KHÔNG thay đổi ý nghĩa nội dung
+	+ Luôn chuyển TOÀN BỘ chữ cái Latin và chữ số từ Full-width (全角) → Half-width (半角)
+	+ Giữ nguyên các ký tự tiếng Nhật (Kanji, Hiragana, Katakana)
+	+ KHÔNG được cắt chuỗi
+	+ KHÔNG thay đổi ý nghĩa nội dung
 	+ Mục đích:
 		* Đảm bảo phù hợp giới hạn ô input tối đa 30 ký tự
 

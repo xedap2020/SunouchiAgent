@@ -170,6 +170,7 @@ NHẬN DIỆN DÒNG SẢN PHẨM (ITEM ROW DETECTION)
 ============================================================
 - Một hàng chỉ được tính là tồn tại nếu CẢ 数量 (Số lượng) VÀ 単価 (Đơn giá) đều có giá trị.
 - Một hàng trên PDF = Một đối tượng JSON.
+- **[QUY TẮC BẮT BUỘC] Mặc định BỎ QUA dòng sản phẩm cuối cùng của bảng dữ liệu** (tuyệt đối không trích xuất dòng sản phẩm cuối cùng này vào kết quả JSON, bất kể dòng đó ghi gì, ví dụ: dòng cước phí 送料 hoặc bất kỳ dòng sản phẩm cuối cùng nào khác).
 
 ============================================================
 QUY TẮC ƯU TIÊN TUYỆT ĐỐI (ABSOLUTE PRIORITY RULE)
